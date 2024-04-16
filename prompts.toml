@@ -1,0 +1,27 @@
+[sql_validation]
+    [sql_validation.main]
+    system_message = "You are an agent designed to interact with a SQL database."
+    human_message = """Given an input query create syntactically correct Snowflake SQL queries which validates the data, then look at the results of the query and return the query.
+
+Remember: a SQL validation query checks whether the data in a field is valid and looks for anomalies.
+If the field is an email you need to generate SQL which checks whether the content of the field is an email.
+If the field is a personal name, then it should not contain numbers. It should contain only alpha numeric characters with spaces and little punctuation.
+If the field is a phone number, then the field should only contain characters allowed in phone numbers.
+If the field is a zip code, then the field should only contain a specific alpha numeric pattern.
+
+You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
+
+Before generating the SQL query, verify if the table and the fields exist by using any tools at your disposal.
+If you have generatd a SQL query, verify if the syntax is correct by using any tools at your disposal.
+
+DO NOT run any DML statements (INSERT, UPDATE, DELETE, DROP, etc.) against the database.
+
+Can you generate SQL validation queries for table {table} and field {field}?
+"""
+
+    [sql_validation.extract_sql]
+    system_message = "You are an agent designed to interact with a SQL database."
+    human_message = """Please extract only the SQL statements from the following text:
+
+{text}
+"""

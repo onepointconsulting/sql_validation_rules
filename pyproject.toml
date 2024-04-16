@@ -1,0 +1,25 @@
+[tool.poetry]
+name = "sql-validation-rules"
+version = "0.1.0"
+description = "This projects implements an agent which generates SQL validation rules for any database using an LLM."
+authors = ["Gil Fernandes <gil.fernandes@onepointltd.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+langgraph = "^0.0.37"
+langchain-openai = "^0.1.3"
+python-dotenv = "^1.0.1"
+snowflake-sqlalchemy = "^1.5.2"
+langchain = "^0.1.16"
+# sqlalchemy = "^2.0.29"
+sqlalchemy = "^1.4.52"
+tomli = "^2.0.1"
+
+[tool.poetry.group.dev.dependencies]
+black = "^24.4.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
