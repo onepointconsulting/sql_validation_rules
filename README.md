@@ -28,3 +28,9 @@ python -m unittest
 python .\sql_validation_rules\graph\graph_integration_test_cases.py
 ```
 
+## Running the command line tool
+
+```bash
+python.exe .\sql_validation_rules\cli\main.py -t inventory -f inventory.txt
+```
+

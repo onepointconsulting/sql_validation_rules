@@ -19,7 +19,7 @@ def sql_db_factory() -> SQLDatabase:
             host=snowflake_config.snowflake_host,
         )
     )
-    return SQLDatabase(engine=engine, schema=schema)
+    return SQLDatabase(engine=engine, schema=schema, lazy_table_reflection=True)
 
 
 if __name__ == "__main__":

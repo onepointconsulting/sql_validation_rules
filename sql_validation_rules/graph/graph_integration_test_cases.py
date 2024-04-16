@@ -1,6 +1,7 @@
 from typing import Dict
 from sql_validation_rules.config.log_factory import logger
 from sql_validation_rules.graph.graph_factory import workflow, app
+from sql_validation_rules.graph.graph_utils import stream_outputs
 
 
 def log_workflow_properties():
@@ -8,12 +9,6 @@ def log_workflow_properties():
     logger.info("Nodes: %s", workflow.nodes)
     logger.info("Edges: %s", workflow.edges)
     logger.info(workflow.channels)
-
-
-def stream_outputs(inputs: Dict[str, any]):
-    for s in app.stream(inputs):
-        content = list(s.values())[0]
-        yield content
 
 
 def invoke(inputs: Dict[str, any]) -> Dict[str, any]:

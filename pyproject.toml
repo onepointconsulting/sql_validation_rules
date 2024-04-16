@@ -16,6 +16,7 @@ langchain = "^0.1.16"
 # sqlalchemy = "^2.0.29"
 sqlalchemy = "^1.4.52"
 tomli = "^2.0.1"
+click = "^8.1.7"
 
 [tool.poetry.group.dev.dependencies]
 black = "^24.4.0"

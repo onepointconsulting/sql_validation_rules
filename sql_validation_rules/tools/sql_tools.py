@@ -1,4 +1,3 @@
-from typing import List
 from sql_validation_rules.db_connection_factory import sql_db_factory
 
 from langchain_community.tools.sql_database.tool import (
@@ -7,11 +6,12 @@ from langchain_community.tools.sql_database.tool import (
     QuerySQLCheckerTool,
     QuerySQLDataBaseTool,
 )
-from langchain.tools import BaseTool, StructuredTool, Tool, tool
+from langchain.tools import BaseTool, tool
 from langchain_community.tools.sql_database.tool import ListSQLDatabaseTool
 from langchain_core.tools import BaseTool
 
 from sql_validation_rules.config.config import cfg
+from sql_validation_rules.tools.list_columns_tool import ListIndicesSQLDatabaseTool
 
 db = sql_db_factory()
 
@@ -23,7 +23,10 @@ query_sql: BaseTool = QuerySQLDataBaseTool(db=db)
 
 query_sql_checker: BaseTool = QuerySQLCheckerTool(db=db, llm=cfg.llm)
 
+query_columns_tool: BaseTool = ListIndicesSQLDatabaseTool(db=db)
 
+
+# Note that the input string is ignored here but cannot be removed.
 @tool("list_tables", return_direct=True)
 def sql_list_tables(input: str) -> str:
     """Returns all tables in the current database."""
@@ -46,6 +49,12 @@ def sql_query(sql: str) -> str:
 def sql_query_checker(sql: str) -> str:
     """Validates SQL queries to check if the syntax is correct"""
     return query_sql_checker(tool_input=sql)
+
+
+@tool("sql_query_columns", return_direct=True)
+def sql_query_columns(table_name: str) -> str:
+    """Gets columns of a table as a JSON array"""
+    return query_columns_tool(table_name)
 
 
 if __name__ == "__main__":
@@ -72,9 +81,17 @@ if __name__ == "__main__":
         logger.info(type(res))
         logger.info(f"SQL query check result: {res}")
 
-    table_list = call_list_tables()
-    call_sql_info_tables(table_list)
-    query = "select count(*) from call_center"
-    call_sql_query(query)
-    call_sql_query_checker(query)
-    call_sql_query_checker("select from call_center")
+    def call_sql_query_columns(table_name: str):
+        logger.info(f"- Table: {table_name}")
+        res = sql_query_columns(table_name)
+        logger.info(type(res))
+        logger.info(f"SQL query columns result: {res}")
+
+    table_list_str = call_list_tables()
+    # call_sql_info_tables(table_list_str)
+    # query = "select count(*) from call_center"
+    # call_sql_query(query)
+    # call_sql_query_checker(query)
+    # call_sql_query_checker("select from call_center")
+    # table_list = [t.strip() for t in table_list_str.split(",")]
+    # call_sql_query_columns(table_list[0])
