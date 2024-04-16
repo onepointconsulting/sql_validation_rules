@@ -12,6 +12,10 @@ pip install poetry
 poetry install
 ```
 
+## Configuration
+
+Please check the [.env_local](.env_local) file to see the needed configuration parameters.
+
 ## Running unit tests
 
 ```bash
@@ -23,3 +27,4 @@ python -m unittest
 ```bash
 python .\sql_validation_rules\graph\graph_integration_test_cases.py
 ```
+
