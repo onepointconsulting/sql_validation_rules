@@ -25,12 +25,20 @@ python -m unittest
 ## Running some integration tests
 
 ```bash
-python .\sql_validation_rules\graph\graph_integration_test_cases.py
+python ./sql_validation_rules/graph/graph_integration_test_cases.py
 ```
 
 ## Running the command line tool
 
+View the supported commands:
+
 ```bash
-python.exe .\sql_validation_rules\cli\main.py -t inventory -f inventory.txt
+python .\sql_validation_rules\cli\main.py --help
+```
+
+Generate validation rules for table inventory:
+
+```bash
+python ./sql_validation_rules/cli/main.py generate-rules --table inventory -f inventory.txt
 ```
 
