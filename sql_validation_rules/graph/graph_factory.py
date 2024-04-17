@@ -64,16 +64,16 @@ def run_extraction(data):
 
 
 workflow = StateGraph(AgentState)
-workflow.add_node(AGENT, run_agent)
-workflow.add_node(ACTION, execute_tools)
-workflow.add_node(EXTRACTION, run_extraction)
+workflow.add_node(AGENT, run_agent) # LLM
+workflow.add_node(ACTION, execute_tools) # SQL tools
+workflow.add_node(EXTRACTION, run_extraction) # Extraction
 
 workflow.set_entry_point(AGENT)
 
+workflow.add_edge(ACTION, AGENT)
 workflow.add_conditional_edges(
     AGENT, should_continue, {"continue": ACTION, "end": EXTRACTION}
 )
-workflow.add_edge(ACTION, AGENT)
 workflow.add_edge(EXTRACTION, END)
 
 

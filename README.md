@@ -15,7 +15,7 @@ poetry install
 ## Configuration
 
 Please check the [.env_local](.env_local) file to see the needed configuration parameters. 
-You should copy this file to .env and then fill the necessary parameters. Please note that this toll requires a valid ChatGPT key.
+You should copy this file to `.env` and then fill the necessary parameters. Please note that this toll requires a valid ChatGPT key.
 
 ## Running unit tests
 
@@ -41,5 +41,11 @@ Generate validation rules for table inventory:
 
 ```bash
 python ./sql_validation_rules/cli/main.py generate-rules --table inventory -f inventory.txt
+```
+
+Generate validation rules for table reason:
+
+```bash
+python ./sql_validation_rules/cli/main.py generate-rules --table reason -f reason.txt
 ```
 

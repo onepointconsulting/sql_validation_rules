@@ -24,10 +24,10 @@
         <bpmn:targetRef>DataStoreReference_0p9xmwj</bpmn:targetRef>
       </bpmn:dataOutputAssociation>
     </bpmn:serviceTask>
-    <bpmn:dataStoreReference id="DataStoreReference_1cmbad4" />
+    <bpmn:dataStoreReference id="DataStoreReference_1cmbad4" name="Snowflake" />
     <bpmn:sequenceFlow id="Flow_1nwx1or" sourceRef="Activity_0meradh" targetRef="Activity_1hlkziq" />
     <bpmn:sequenceFlow id="Flow_0zsytiz" sourceRef="Activity_1hlkziq" targetRef="Activity_0hg6a1t" />
-    <bpmn:dataStoreReference id="DataStoreReference_0igo6ou" />
+    <bpmn:dataStoreReference id="DataStoreReference_0igo6ou" name="Snowflake" />
     <bpmn:serviceTask id="Activity_1hlkziq" name="Receive DDL">
       <bpmn:incoming>Flow_1nwx1or</bpmn:incoming>
       <bpmn:outgoing>Flow_0zsytiz</bpmn:outgoing>
@@ -37,7 +37,7 @@
         <bpmn:targetRef>Property_14wy342</bpmn:targetRef>
       </bpmn:dataInputAssociation>
     </bpmn:serviceTask>
-    <bpmn:dataStoreReference id="DataStoreReference_0p9xmwj" />
+    <bpmn:dataStoreReference id="DataStoreReference_0p9xmwj" name="Snowflake" />
     <bpmn:serviceTask id="Activity_0i8vnqq" name="Get statistical queries">
       <bpmn:incoming>Flow_0fagyoh</bpmn:incoming>
       <bpmn:outgoing>Flow_04kxhu5</bpmn:outgoing>
@@ -48,7 +48,7 @@
       </bpmn:dataInputAssociation>
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_0fagyoh" sourceRef="Activity_0hg6a1t" targetRef="Activity_0i8vnqq" />
-    <bpmn:dataStoreReference id="DataStoreReference_09nckqr" />
+    <bpmn:dataStoreReference id="DataStoreReference_09nckqr" name="Snowflake" />
     <bpmn:sequenceFlow id="Flow_04kxhu5" sourceRef="Activity_0i8vnqq" targetRef="Activity_1igdhj3" />
     <bpmn:serviceTask id="Activity_1igdhj3" name="Fetch sample data">
       <bpmn:incoming>Flow_04kxhu5</bpmn:incoming>
@@ -57,9 +57,9 @@
         <bpmn:targetRef>DataStoreReference_1779j8f</bpmn:targetRef>
       </bpmn:dataOutputAssociation>
     </bpmn:serviceTask>
-    <bpmn:dataStoreReference id="DataStoreReference_1779j8f" />
+    <bpmn:dataStoreReference id="DataStoreReference_1779j8f" name="Snowflake" />
     <bpmn:sequenceFlow id="Flow_0m9dtfi" sourceRef="Activity_1igdhj3" targetRef="Activity_066bkjp" />
-    <bpmn:dataStoreReference id="DataStoreReference_19pyzpz" />
+    <bpmn:dataStoreReference id="DataStoreReference_19pyzpz" name="Snowflake" />
     <bpmn:sequenceFlow id="Flow_0ccvxpk" sourceRef="Activity_066bkjp" targetRef="Activity_00hptdb" />
     <bpmn:dataObjectReference id="DataObjectReference_1d3w5bt" name="Chat GPT" dataObjectRef="DataObject_0vj7l6n" />
     <bpmn:dataObject id="DataObject_0vj7l6n" />
@@ -178,21 +178,39 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DataStoreReference_1cmbad4_di" bpmnElement="DataStoreReference_1cmbad4">
         <dc:Bounds x="455" y="105" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="454" y="75" width="52" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0x22pa7" bpmnElement="DataStoreReference_0igo6ou">
         <dc:Bounds x="615" y="105" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="614" y="75" width="52" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1qsvkb5" bpmnElement="DataStoreReference_0p9xmwj">
         <dc:Bounds x="775" y="105" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="774" y="75" width="52" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1a14sw9" bpmnElement="DataStoreReference_09nckqr">
         <dc:Bounds x="935" y="105" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="934" y="75" width="52" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_0nh1ve8" bpmnElement="DataStoreReference_1779j8f">
         <dc:Bounds x="1095" y="105" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1094" y="75" width="52" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="BPMNShape_1uwdy6e" bpmnElement="DataStoreReference_19pyzpz">
         <dc:Bounds x="1255" y="105" width="50" height="50" />
+        <bpmndi:BPMNLabel>
+          <dc:Bounds x="1254" y="75" width="52" height="14" />
+        </bpmndi:BPMNLabel>
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="DataObjectReference_1d3w5bt_di" bpmnElement="DataObjectReference_1d3w5bt">
         <dc:Bounds x="1420" y="105" width="36" height="50" />

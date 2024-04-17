@@ -1,3 +1,4 @@
+import sys
 from sql_validation_rules.db_connection_factory import sql_db_factory
 
 from langchain_community.tools.sql_database.tool import (
@@ -25,12 +26,17 @@ query_sql_checker: BaseTool = QuerySQLCheckerTool(db=db, llm=cfg.llm)
 
 query_columns_tool: BaseTool = ListIndicesSQLDatabaseTool(db=db)
 
+# Simplistic cache for the SQL list tables.
+sys.list_tables_cache = ""
 
 # Note that the input string is ignored here but cannot be removed.
 @tool("list_tables", return_direct=True)
 def sql_list_tables(input: str) -> str:
     """Returns all tables in the current database."""
-    return list_tables_tool(tool_input="")
+    if len(sys.list_tables_cache) > 0:
+        return sys.list_tables_cache
+    sys.list_tables_cache = list_tables_tool(tool_input="")
+    return sys.list_tables_cache
 
 
 @tool("info_tables", return_direct=True)
