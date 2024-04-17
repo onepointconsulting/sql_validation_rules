@@ -14,7 +14,8 @@ poetry install
 
 ## Configuration
 
-Please check the [.env_local](.env_local) file to see the needed configuration parameters.
+Please check the [.env_local](.env_local) file to see the needed configuration parameters. 
+You should copy this file to .env and then fill the necessary parameters. Please note that this toll requires a valid ChatGPT key.
 
 ## Running unit tests
 
