@@ -64,9 +64,9 @@ def run_extraction(data):
 
 
 workflow = StateGraph(AgentState)
-workflow.add_node(AGENT, run_agent) # LLM
-workflow.add_node(ACTION, execute_tools) # SQL tools
-workflow.add_node(EXTRACTION, run_extraction) # Extraction
+workflow.add_node(AGENT, run_agent)  # LLM
+workflow.add_node(ACTION, execute_tools)  # SQL tools
+workflow.add_node(EXTRACTION, run_extraction)  # Extraction
 
 workflow.set_entry_point(AGENT)
 

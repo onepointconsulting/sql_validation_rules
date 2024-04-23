@@ -2,6 +2,7 @@ from typing import Dict
 from sql_validation_rules.config.log_factory import logger
 from sql_validation_rules.graph.graph_factory import workflow, app
 from sql_validation_rules.graph.graph_utils import stream_outputs
+from sql_validation_rules.agent.agent_state import FIELD_EXCLUSION_RULES
 
 
 def log_workflow_properties():
@@ -20,11 +21,36 @@ if __name__ == "__main__":
     from pathlib import Path
 
     inputs_list = [
-        {"table": "web_site", "field": "web_zip", "chat_history": []},
-        {"table": "web_site", "field": "web_street_type", "chat_history": []},
-        {"table": "web_site", "field": "web_company_name", "chat_history": []},
-        {"table": "web_site", "field": "web_suite_number", "chat_history": []},
-        {"table": "web_site", "field": "web_site_id", "chat_history": []},
+        {
+            "table": "web_site",
+            "field": "web_zip",
+            "chat_history": [],
+            FIELD_EXCLUSION_RULES: [],
+        },
+        {
+            "table": "web_site",
+            "field": "web_street_type",
+            "chat_history": [],
+            FIELD_EXCLUSION_RULES: [],
+        },
+        {
+            "table": "web_site",
+            "field": "web_company_name",
+            "chat_history": [],
+            FIELD_EXCLUSION_RULES: [],
+        },
+        {
+            "table": "web_site",
+            "field": "web_suite_number",
+            "chat_history": [],
+            FIELD_EXCLUSION_RULES: [],
+        },
+        {
+            "table": "web_site",
+            "field": "web_site_id",
+            "chat_history": [],
+            FIELD_EXCLUSION_RULES: [],
+        },
     ]
 
     output_file = Path("integration_test_cases_out.txt")

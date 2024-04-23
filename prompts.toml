@@ -8,14 +8,18 @@ If the field is an email you need to generate SQL which checks whether the conte
 If the field is a personal name, then it should not contain numbers. It should contain only alpha numeric characters with spaces and little punctuation.
 If the field is a phone number, then the field should only contain characters allowed in phone numbers.
 If the field is a zip code, then the field should only contain a specific alpha numeric pattern.
+If the field is a numeric, then the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for an personal age field you should have no megative mumbers).
 
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
 Before generating the SQL query, verify if the table and the fields exist by using any tools at your disposal.
 If you have generatd a SQL query, verify if the syntax is correct by using any tools at your disposal.
-If you execute SQL queries limit them to a maximum of 1000 rows.
 
+If you execute SQL queries limit them to a maximum of 1000 rows.
 DO NOT run any DML statements (INSERT, UPDATE, DELETE, DROP, etc.) against the database.
+
+Can you NOT generate sql for these specific rules if specified (ignore if nothing specified):
+```{exclusion_rules}```
 
 Can you generate SQL validation queries for table {table} and field {field}?
 """

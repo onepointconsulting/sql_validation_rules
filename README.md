@@ -4,6 +4,8 @@ This projects implements an agent which generates SQL validation rules for any d
 
 ## Install the project
 
+Please make sure that Conda is properly installed on your shell. Typically you can install
+
 ```bash
 conda remove -n sql_validation_rules --all
 conda create -n sql_validation_rules python=3.12
@@ -15,7 +17,7 @@ poetry install
 ## Configuration
 
 Please check the [.env_local](.env_local) file to see the needed configuration parameters. 
-You should copy this file to `.env` and then fill the necessary parameters. Please note that this toll requires a valid ChatGPT key.
+You should copy this file to `.env` and then fill the necessary parameters. Please note that this tool requires a valid ChatGPT API key.
 
 ## Running unit tests
 
@@ -49,3 +51,14 @@ Generate validation rules for table reason:
 python ./sql_validation_rules/cli/main.py generate-rules --table reason -f reason.txt
 ```
 
+Generate validation rule for a specific column in a table excluding some rule types:
+
+```bash
+python ./sql_validation_rules/cli/main.py generate-column-rule --table call_center -c cc_call_center_sk -e "Data Type Validation, Validation SQL"
+```
+
+Generate multiple rules for one single table column:
+
+```bash
+python ./sql_validation_rules/cli/main.py generate-multiple-column-rules --table call_center -c cc_call_center_sk --count 4 -f call_center_cc_call_center_sk.md
+```

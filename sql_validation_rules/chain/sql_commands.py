@@ -15,6 +15,7 @@ class SQLCommand(BaseModel):
 {self.validation_command}
 """
 
+
 class SQLCommands(BaseModel):
     validation_commands: List[SQLCommand] = Field(
         ..., description="The extracted SQL commands"

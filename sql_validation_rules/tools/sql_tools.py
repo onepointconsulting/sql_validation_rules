@@ -29,6 +29,7 @@ query_columns_tool: BaseTool = ListIndicesSQLDatabaseTool(db=db)
 # Simplistic cache for the SQL list tables.
 sys.list_tables_cache = ""
 
+
 # Note that the input string is ignored here but cannot be removed.
 @tool("list_tables", return_direct=True)
 def sql_list_tables(input: str) -> str:
