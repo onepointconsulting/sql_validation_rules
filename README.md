@@ -39,6 +39,12 @@ View the supported commands:
 python .\sql_validation_rules\cli\main.py --help
 ```
 
+List all columns of table 'call_center':
+
+```bash
+python .\sql_validation_rules\cli\main.py list-columns --table call_center
+```
+
 Generate validation rules for table inventory:
 
 ```bash
@@ -63,4 +69,8 @@ Generate multiple rules for one single table column:
 
 ```bash
 python ./sql_validation_rules/cli/main.py generate-multiple-column-rules --table call_center -c cc_call_center_sk --count 4 -f call_center_cc_call_center_sk.md
+```
+
+```bash
+python ./sql_validation_rules/cli/main.py generate-multiple-column-rules --table call_center -c cc_city --count 3 -f call_center_cc_city.txt
 ```

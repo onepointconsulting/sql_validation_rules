@@ -14,6 +14,7 @@ from sql_validation_rules.agent.agent_state import FIELD_EXCLUSION_RULES
 
 
 def create_agent_runnable() -> RunnableSequence:
+    """Construct an OpenAI functions agent"""
     return create_openai_functions_agent(
         llm=cfg.llm,
         prompt=create_sql_validation_template(),

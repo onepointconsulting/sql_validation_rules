@@ -191,7 +191,7 @@ def generate_multiple_column_rules(table: str, column: str, count: int, file: st
                 f.write(f"{extraction_content.validation_command}\n\n")
                 f.write(f"```\n\n")
             else:
-                f.write(f"Failed to extract column rule for {table} - {column}")
+                f.write(f"Failed to extract column rule for {table} - {column}\n\n")
             f.flush()
 
 
