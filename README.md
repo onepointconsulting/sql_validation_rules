@@ -43,6 +43,8 @@ Generate validation rules for table inventory:
 
 ```bash
 python ./sql_validation_rules/cli/main.py generate-rules --table inventory -f inventory.txt
+python ./sql_validation_rules/cli/main.py generate-rules --table inventory -f inventory.txt --hide_steps
+python ./sql_validation_rules/cli/main.py generate-rules --table inventory -f inventory.txt --hide_steps --count 2
 ```
 
 Generate validation rules for table reason:

@@ -26,7 +26,13 @@ def cli(ctx):
 )
 @click.option("-f", "--file", help="The output file into which the output is recorded.")
 @click.option("-h", "--hide_steps", help="Hide steps", is_flag=True, default=False)
-def generate_rules(table: str, file: str, hide_steps: bool):
+@click.option(
+    "--count",
+    type=int,
+    default=1,
+    help="How many distinct rules to generate",
+)
+def generate_rules(table: str, file: str, hide_steps: bool, count: int):
     """Generates rules for all fields in a table"""
     output_file = Path(file)
     if output_file.exists():
@@ -36,31 +42,37 @@ def generate_rules(table: str, file: str, hide_steps: bool):
         col_json = sql_query_columns(table)
         cols = json.loads(col_json)
         for i, col in enumerate(cols):
-            inputs = {
-                "table": table,
-                "field": col["name"],
-                "chat_history": [],
-                FIELD_EXCLUSION_RULES: "",
-            }
             sep = "\n\n" if i > 0 else ""
-            f.write(f"{sep}# {inputs['table']} - {inputs['field']}\n")
-            try:
-                last_content = ""
-                for content in stream_outputs(inputs):
-                    if not hide_steps:
-                        f.write("\n -------------------- \n")
-                        f.write(f"{content}")
-                    if "extraction_content" in content:
-                        sql_commands: List[SQLCommand] = content["extraction_content"]
-                        last_content = "\n".join([repr(s) for s in sql_commands])
-                    f.flush()
+            col_name = col["name"]
+            f.write(f"{sep}# {table} - {col_name}\n")
+            exclusion_rule = ""
+            for c in range(count):
+                inputs = {
+                    "table": table,
+                    "field": col_name,
+                    "chat_history": [],
+                    FIELD_EXCLUSION_RULES: exclusion_rule,
+                }
+                try:
+                    last_content = ""
+                    for content in stream_outputs(inputs):
+                        if not hide_steps:
+                            f.write("\n -------------------- \n")
+                            f.write(f"{content}")
+                        if "extraction_content" in content:
+                            sql_commands: List[SQLCommand] = content[
+                                "extraction_content"
+                            ]
+                            last_content = "\n".join([repr(s) for s in sql_commands])
+                            exclusion_rule = ",".join(s.validation_type for s in sql_commands)
+                        f.flush()
 
-                f.write(f"\n\n{last_content}\n\n")
-                f.flush()
-            except Exception as e:
-                msg = f"Failed to process {inputs}. Reason: {e}"
-                logger.exception(msg)
-                f.write(msg)
+                    f.write(f"\n\n{last_content}\n\n")
+                    f.flush()
+                except Exception as e:
+                    msg = f"Failed to process {inputs}. Reason: {e}"
+                    logger.exception(msg)
+                    f.write(msg)
 
 
 @cli.command()
