@@ -126,6 +126,7 @@ def list_columns(table: str):
     help="Some rule that you do not want to test. This can be empty.",
 )
 def generate_column_rule(table: str, column: str, exclusion_rule: str):
+    "Generate a single rule for a column"
     res = invoke_column_rule(table, column, exclusion_rule)
     extraction_content = extract_content(res)
     if extraction_content:
@@ -175,6 +176,7 @@ def extract_content(res: dict) -> Union[SQLCommand, None]:
 )
 @click.option("-f", "--file", help="The output file into which the output is recorded.")
 def generate_multiple_column_rules(table: str, column: str, count: int, file: str):
+    "Generate multiple rules for a column"
     exclusion_rule = []
     with open(file, "w") as f:
         f.write(f"# Table: {table} Column: {column}\n\n")
