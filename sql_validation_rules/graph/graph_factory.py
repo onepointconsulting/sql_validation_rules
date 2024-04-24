@@ -76,5 +76,4 @@ workflow.add_conditional_edges(
 )
 workflow.add_edge(EXTRACTION, END)
 
-
 app = workflow.compile()
