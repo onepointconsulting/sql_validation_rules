@@ -8,7 +8,7 @@ If the field is an email you need to generate SQL which checks whether the conte
 If the field is a personal name, then it should not contain numbers. It should contain only alpha numeric characters with spaces and little punctuation.
 If the field is a phone number, then the field should only contain characters allowed in phone numbers.
 If the field is a zip code, then the field should only contain a specific alpha numeric pattern.
-If the field is a numeric, then the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for an personal age field you should have no megative mumbers).
+If the field is a numeric, then the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for an personal age field you should have no negative mumbers).
 
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
