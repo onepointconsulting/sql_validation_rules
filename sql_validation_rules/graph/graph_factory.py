@@ -1,6 +1,9 @@
+from typing import Tuple
+
 from langchain_core.agents import AgentFinish
 from langgraph.prebuilt.tool_executor import ToolExecutor
 from langgraph.graph import END, StateGraph
+from langgraph.graph.graph import CompiledGraph
 
 from sql_validation_rules.tools.sql_tools import (
     sql_list_tables,
@@ -10,16 +13,19 @@ from sql_validation_rules.tools.sql_tools import (
 )
 from sql_validation_rules.agent.agent_factory import agent_runnable
 from sql_validation_rules.config.log_factory import logger
-from sql_validation_rules.agent.agent_state import AgentState
+from sql_validation_rules.agent.agent_state import (
+    AgentState,
+    INTERMEDIATE_STEPS,
+    AGENT_OUTCOME,
+    EXTRACTION_CONTENT,
+)
 from sql_validation_rules.chain.command_extraction_factory import extraction_chain
 from sql_validation_rules.chain.sql_commands import SQLCommands
 
-AGENT_OUTCOME = "agent_outcome"
-INTERMEDIATE_STEPS = "intermediate_steps"
+
 AGENT = "agent"
 ACTION = "action"
 EXTRACTION = "extraction"
-EXTRACTION_CONTENT = "extraction_content"
 
 
 def create_tool_executor():
@@ -63,17 +69,25 @@ def run_extraction(data):
         return {EXTRACTION_CONTENT: "No results"}
 
 
-workflow = StateGraph(AgentState)
-workflow.add_node(AGENT, run_agent)  # LLM
-workflow.add_node(ACTION, execute_tools)  # SQL tools
-workflow.add_node(EXTRACTION, run_extraction)  # Extraction
+def build_workflow(workflow: StateGraph):
+    workflow.add_node(AGENT, run_agent)  # LLM
+    workflow.add_node(ACTION, execute_tools)  # SQL tools
+    workflow.add_node(EXTRACTION, run_extraction)  # Extraction
 
-workflow.set_entry_point(AGENT)
+    workflow.set_entry_point(AGENT)
 
-workflow.add_edge(ACTION, AGENT)
-workflow.add_conditional_edges(
-    AGENT, should_continue, {"continue": ACTION, "end": EXTRACTION}
-)
-workflow.add_edge(EXTRACTION, END)
+    workflow.add_edge(ACTION, AGENT)
+    workflow.add_conditional_edges(
+        AGENT, should_continue, {"continue": ACTION, "end": EXTRACTION}
+    )
+    workflow.add_edge(EXTRACTION, END)
 
-app = workflow.compile()
+
+def create_app() -> Tuple[StateGraph, CompiledGraph]:
+    workflow = StateGraph(AgentState)
+    build_workflow(workflow)
+
+    return workflow, workflow.compile()
+
+
+workflow, app = create_app()

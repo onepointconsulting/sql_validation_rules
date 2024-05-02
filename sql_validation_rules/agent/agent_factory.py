@@ -10,7 +10,7 @@ from sql_validation_rules.tools.sql_tools import (
     sql_info_tables,
 )
 from sql_validation_rules.agent.prompt_factory import create_sql_validation_template
-from sql_validation_rules.agent.agent_state import FIELD_EXCLUSION_RULES
+from sql_validation_rules.agent.agent_state import FIELD_VALIDATION_SQL_HISTORY
 
 
 def create_agent_runnable() -> RunnableSequence:
@@ -29,7 +29,7 @@ if __name__ == "__main__":
     inputs = {
         "table": "web_site",
         "field": "web_suite_number",
-        FIELD_EXCLUSION_RULES: "",
+        FIELD_VALIDATION_SQL_HISTORY: "",
         "chat_history": [],
         "intermediate_steps": [],
     }

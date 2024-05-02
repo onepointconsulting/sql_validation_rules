@@ -1,7 +1,12 @@
 [sql_validation]
+    [sql_validation.supervisor]
+    system_message = """You are a supervisor tasked with calling the following workers: {members}. 
+Given the following user request either call a worker or if you are finished, respond with FINISH.
+"""
+    human_message = """Given a table {table} and a column {field} """
     [sql_validation.main]
     system_message = "You are an agent designed to interact with a SQL database."
-    human_message = """Given an input query create syntactically correct Snowflake SQL queries which validate the data, then look at the results of the query and return the query.
+    human_message = """Given an input query create syntactically correct Snowflake SQL query which validate the data, then look at the results of the query and return the query.
 
 Remember: a SQL validation query checks whether the data in a field is valid and looks for anomalies.
 If the field is an email you need to generate SQL which checks whether the content of the field is an email.
@@ -18,10 +23,10 @@ If you have generatd a SQL query, verify if the syntax is correct by using any t
 If you execute SQL queries limit them to a maximum of 1000 rows.
 DO NOT run any DML statements (INSERT, UPDATE, DELETE, DROP, etc.) against the database.
 
-Can you NOT generate sql for these specific rules if specified (ignore if nothing specified):
-```{exclusion_rules}```
+This is the history of previously generated validation SQL queries which you should not re-generate:
+```{validation_sql_history}```
 
-Can you generate SQL validation queries for table {table} and field {field}?
+Can you generate SQL validation query for table {table} and field {field}?
 """
 
     [sql_validation.extract_sql]

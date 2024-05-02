@@ -64,7 +64,9 @@ def generate_rules(table: str, file: str, hide_steps: bool, count: int):
                                 "extraction_content"
                             ]
                             last_content = "\n".join([repr(s) for s in sql_commands])
-                            exclusion_rule = ",".join(s.validation_type for s in sql_commands)
+                            exclusion_rule = ",".join(
+                                s.validation_type for s in sql_commands
+                            )
                         f.flush()
 
                     f.write(f"\n\n{last_content}\n\n")

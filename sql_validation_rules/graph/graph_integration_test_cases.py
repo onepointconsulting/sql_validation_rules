@@ -2,7 +2,7 @@ from typing import Dict
 from sql_validation_rules.config.log_factory import logger
 from sql_validation_rules.graph.graph_factory import workflow, app
 from sql_validation_rules.graph.graph_utils import stream_outputs
-from sql_validation_rules.agent.agent_state import FIELD_EXCLUSION_RULES
+from sql_validation_rules.agent.agent_state import FIELD_VALIDATION_SQL_HISTORY
 
 
 def log_workflow_properties():
@@ -25,31 +25,31 @@ if __name__ == "__main__":
             "table": "web_site",
             "field": "web_zip",
             "chat_history": [],
-            FIELD_EXCLUSION_RULES: [],
+            FIELD_VALIDATION_SQL_HISTORY: [],
         },
         {
             "table": "web_site",
             "field": "web_street_type",
             "chat_history": [],
-            FIELD_EXCLUSION_RULES: [],
+            FIELD_VALIDATION_SQL_HISTORY: [],
         },
         {
             "table": "web_site",
             "field": "web_company_name",
             "chat_history": [],
-            FIELD_EXCLUSION_RULES: [],
+            FIELD_VALIDATION_SQL_HISTORY: [],
         },
         {
             "table": "web_site",
             "field": "web_suite_number",
             "chat_history": [],
-            FIELD_EXCLUSION_RULES: [],
+            FIELD_VALIDATION_SQL_HISTORY: [],
         },
         {
             "table": "web_site",
             "field": "web_site_id",
             "chat_history": [],
-            FIELD_EXCLUSION_RULES: [],
+            FIELD_VALIDATION_SQL_HISTORY: [],
         },
     ]
 
