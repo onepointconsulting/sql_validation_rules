@@ -28,6 +28,27 @@ This is the history of previously generated validation SQL queries which you sho
 
 Can you generate SQL validation query for table {table} and field {field}?
 """
+[sql_validation.email]
+    system_message = "You are an agent designed to interact with a SQL database specialized on emails."
+    human_message = """Given an input query create syntactically correct Snowflake SQL query which validate the data, then look at the results of the query and return the query.
+
+Remember: a SQL validation query checks whether the data in a field is valid and looks for anomalies.
+If the field is an email you need to generate SQL which checks whether the content of the field is an email.
+You can use the following regexes to validate emails: ...
+
+You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
+
+Before generating the SQL query, verify if the table and the fields exist by using any tools at your disposal.
+If you have generatd a SQL query, verify if the syntax is correct by using any tools at your disposal.
+
+If you execute SQL queries limit them to a maximum of 1000 rows.
+DO NOT run any DML statements (INSERT, UPDATE, DELETE, DROP, etc.) against the database.
+
+This is the history of previously generated validation SQL queries which you should not re-generate:
+```{validation_sql_history}```
+
+Can you generate SQL validation query for emails for table {table} and field {field}?
+"""
 
     [sql_validation.extract_sql]
     system_message = "You are an agent designed to interact with a SQL database."

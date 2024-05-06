@@ -73,9 +73,11 @@ if __name__ == "__main__":
     prompt2 = """Please extract SQL validation rules for column web_suite_number in table web_site as long as new ones can be found. 
 When you cannot find new ones stop"""
     prompt3 = """Please extract SQL validation rules for column web_suite_number in table web_site as long as you can generate more meaningful rules. Stop when there are no more meaningful rules to generate on this field."""
+    prompt4 = """Please extract SQL validation rules for column web_suite_number in table web_site 
+as long as you can generate more meaningful rules. Stop when there are no more meaningful rules to generate on this field."""
 
     config = {"recursion_limit": 20}
-    input = {"messages": [HumanMessage(content=prompt3)]}
+    input = {"messages": [HumanMessage(content=prompt2)]}
 
     def message_extractor(agent_result: dict) -> List[SQLCommand]:
         if "messages" in agent_result:
