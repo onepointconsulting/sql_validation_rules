@@ -1,3 +1,4 @@
+from typing import Dict
 import sys
 from sql_validation_rules.db_connection_factory import sql_db_factory
 
@@ -13,6 +14,7 @@ from langchain_core.tools import BaseTool
 
 from sql_validation_rules.config.config import cfg
 from sql_validation_rules.tools.list_columns_tool import ListIndicesSQLDatabaseTool
+from sql_validation_rules.tools.numeric_stats_tool import NumericStatsSQLDatabaseTool
 
 db = sql_db_factory()
 
@@ -25,6 +27,8 @@ query_sql: BaseTool = QuerySQLDataBaseTool(db=db)
 query_sql_checker: BaseTool = QuerySQLCheckerTool(db=db, llm=cfg.llm)
 
 query_columns_tool: BaseTool = ListIndicesSQLDatabaseTool(db=db)
+
+numeric_stats_tool: BaseTool = NumericStatsSQLDatabaseTool(db=db)
 
 # Simplistic cache for the SQL list tables.
 sys.list_tables_cache = ""
@@ -67,6 +71,7 @@ def sql_query_columns(table_name: str) -> str:
 if __name__ == "__main__":
 
     from sql_validation_rules.config.log_factory import logger
+    from sql_validation_rules.tools.numeric_stats_tool import TableColumn
 
     def call_list_tables() -> str:
         table_list = sql_list_tables.run("")
@@ -94,6 +99,13 @@ if __name__ == "__main__":
         logger.info(type(res))
         logger.info(f"SQL query columns result: {res}")
 
+    def call_sql_numeric_statistics(table_col_dict: TableColumn):
+        logger.info(f"- Table: {table_col_dict}")
+        res = numeric_stats_tool.run(table_col_dict.dict())
+        assert res is not None
+        assert isinstance(res, str)
+        logger.info(f"Stats: {res}")
+
     table_list_str = call_list_tables()
     # call_sql_info_tables(table_list_str)
     # query = "select count(*) from call_center"
@@ -102,3 +114,4 @@ if __name__ == "__main__":
     # call_sql_query_checker("select from call_center")
     # table_list = [t.strip() for t in table_list_str.split(",")]
     # call_sql_query_columns(table_list[0])
+    call_sql_numeric_statistics(TableColumn(table_name="call_center", column_name="cc_tax_percentage"))

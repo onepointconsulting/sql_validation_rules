@@ -28,13 +28,13 @@ This is the history of previously generated validation SQL queries which you sho
 
 Can you generate SQL validation query for table {table} and field {field}?
 """
-[sql_validation.email]
-    system_message = "You are an agent designed to interact with a SQL database specialized on emails."
+[sql_validation.numeric_field]
+    system_message = "You are an agent designed to interact with a SQL database specialized on numeric fields."
     human_message = """Given an input query create syntactically correct Snowflake SQL query which validate the data, then look at the results of the query and return the query.
 
 Remember: a SQL validation query checks whether the data in a field is valid and looks for anomalies.
 If the field is an email you need to generate SQL which checks whether the content of the field is an email.
-You can use the following regexes to validate emails: ...
+You can use the following regexes to validate numeric fields: ...
 
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
@@ -47,7 +47,7 @@ DO NOT run any DML statements (INSERT, UPDATE, DELETE, DROP, etc.) against the d
 This is the history of previously generated validation SQL queries which you should not re-generate:
 ```{validation_sql_history}```
 
-Can you generate SQL validation query for emails for table {table} and field {field}?
+Can you generate SQL validation query for numeric field for table {table} and field {field}?
 """
 
     [sql_validation.extract_sql]
