@@ -1,3 +1,5 @@
+import json
+
 from typing import Optional, List, Any
 from langchain.tools.sql_database.tool import BaseSQLDatabaseTool
 from langchain.tools.base import BaseTool
@@ -7,13 +9,10 @@ from langchain.callbacks.manager import (
 )
 from pydantic.v1 import BaseModel, Field
 
+
 class TableColumn(BaseModel):
-    table_name: str = Field(
-        ..., description="The name of the table"
-    )
-    column_name: str = Field(
-        ..., description="The name of the table columns"
-    )
+    table_name: str = Field(..., description="The name of the table")
+    column_name: str = Field(..., description="The name of the table columns")
 
 
 class NumericStatsSQLDatabaseTool(BaseSQLDatabaseTool, BaseTool):
@@ -33,18 +32,15 @@ class NumericStatsSQLDatabaseTool(BaseSQLDatabaseTool, BaseTool):
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
         """Execute pre=defined statistical queries."""
-        
+
         try:
-            result_max: List[List[Any]] = self.db._engine.execute(
+            result: List[List[Any]] = self.db._execute(
                 f"select min({column_name}), avg({column_name}), max({column_name}) from {table_name}"
             )
             # TODO: Include other statistical queries.
-            res = ""
-            for row in result_max:
-                res += f"""Min: {float(row[0])}
-Mean: {float(row[1])}
-Max: {float(row[2])}s"""
-            return res
+            for row in result:
+                return json.dumps({k:float(v) for k,v in row.items()})
+            return "<Empty>"
         except Exception as e:
             return f"Error: {e}"
 

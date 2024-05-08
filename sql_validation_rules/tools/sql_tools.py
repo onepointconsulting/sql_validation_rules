@@ -114,4 +114,6 @@ if __name__ == "__main__":
     # call_sql_query_checker("select from call_center")
     # table_list = [t.strip() for t in table_list_str.split(",")]
     # call_sql_query_columns(table_list[0])
-    call_sql_numeric_statistics(TableColumn(table_name="call_center", column_name="cc_tax_percentage"))
+    call_sql_numeric_statistics(
+        TableColumn(table_name="call_center", column_name="cc_tax_percentage")
+    )
