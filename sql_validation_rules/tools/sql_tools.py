@@ -1,4 +1,3 @@
-from typing import Dict
 import sys
 from sql_validation_rules.db_connection_factory import sql_db_factory
 
@@ -14,7 +13,7 @@ from langchain_core.tools import BaseTool
 
 from sql_validation_rules.config.config import cfg
 from sql_validation_rules.tools.list_columns_tool import ListIndicesSQLDatabaseTool
-from sql_validation_rules.tools.numeric_stats_tool import NumericStatsSQLDatabaseTool
+from sql_validation_rules.tools.numeric_stats_tool import NumericStatsSQLDatabaseTool, TableColumn
 
 db = sql_db_factory()
 
@@ -28,7 +27,7 @@ query_sql_checker: BaseTool = QuerySQLCheckerTool(db=db, llm=cfg.llm)
 
 query_columns_tool: BaseTool = ListIndicesSQLDatabaseTool(db=db)
 
-numeric_stats_tool: BaseTool = NumericStatsSQLDatabaseTool(db=db)
+numeric_stats_tool: BaseTool = NumericStatsSQLDatabaseTool(db=db, args_schema=TableColumn)
 
 # Simplistic cache for the SQL list tables.
 sys.list_tables_cache = ""
@@ -50,7 +49,7 @@ def sql_info_tables(table_list_str: str) -> str:
     return info_tables_tool(tool_input=table_list_str)
 
 
-@tool("sql_query", return_direct=True)
+@tool("sql_db_query", return_direct=True)
 def sql_query(sql: str) -> str:
     """Executes a SQL query"""
     return query_sql(tool_input=sql)
@@ -107,6 +106,7 @@ if __name__ == "__main__":
         logger.info(f"Stats: {res}")
 
     table_list_str = call_list_tables()
+    assert numeric_stats_tool.args_schema is not None
     # call_sql_info_tables(table_list_str)
     # query = "select count(*) from call_center"
     # call_sql_query(query)

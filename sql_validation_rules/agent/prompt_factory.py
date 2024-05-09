@@ -3,7 +3,15 @@ from sql_validation_rules.config.toml_support import prompts
 
 
 def create_sql_validation_template() -> ChatPromptTemplate:
-    main_prompts = prompts["sql_validation"]["main"]
+    return create_template_helper("main")
+
+
+def create_sql_validation_numeric_template() -> ChatPromptTemplate:
+    return create_template_helper("numeric_field")
+
+
+def create_template_helper(key: str) -> ChatPromptTemplate:
+    main_prompts = prompts["sql_validation"][key]
     return ChatPromptTemplate.from_messages(
         [
             ("system", main_prompts["system_message"]),

@@ -31,15 +31,15 @@ class NumericStatsSQLDatabaseTool(BaseSQLDatabaseTool, BaseTool):
         column_name: str,
         run_manager: Optional[CallbackManagerForToolRun] = None,
     ) -> str:
-        """Execute pre=defined statistical queries."""
+        """Execute pre=defined statistical querie, like e.g. min, max, averages."""
 
         try:
             result: List[List[Any]] = self.db._execute(
-                f"select min({column_name}), avg({column_name}), max({column_name}) from {table_name}"
+                f"select min({column_name}), avg({column_name}), max({column_name}), stddev({column_name}) from {table_name}"
             )
             # TODO: Include other statistical queries.
             for row in result:
-                return json.dumps({k:float(v) for k,v in row.items()})
+                return json.dumps({k: float(v) for k, v in row.items()})
             return "<Empty>"
         except Exception as e:
             return f"Error: {e}"

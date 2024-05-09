@@ -6,6 +6,7 @@ import operator
 from sql_validation_rules.chain.sql_commands import SQLCommand
 
 FIELD_VALIDATION_SQL_HISTORY = "validation_sql_history"
+FIELD_CHAT_HISTORY = "chat_history"
 INTERMEDIATE_STEPS = "intermediate_steps"
 AGENT_OUTCOME = "agent_outcome"
 EXTRACTION_CONTENT = "extraction_content"

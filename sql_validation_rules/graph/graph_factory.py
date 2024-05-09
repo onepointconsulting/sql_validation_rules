@@ -10,8 +10,12 @@ from sql_validation_rules.tools.sql_tools import (
     sql_info_tables,
     sql_query,
     sql_query_checker,
+    numeric_stats_tool,
 )
-from sql_validation_rules.agent.agent_factory import agent_runnable
+from sql_validation_rules.agent.agent_factory import (
+    agent_runnable,
+    agent_runnable_numeric,
+)
 from sql_validation_rules.config.log_factory import logger
 from sql_validation_rules.agent.agent_state import (
     AgentState,
@@ -21,6 +25,7 @@ from sql_validation_rules.agent.agent_state import (
 )
 from sql_validation_rules.chain.command_extraction_factory import extraction_chain
 from sql_validation_rules.chain.sql_commands import SQLCommands
+from langchain_core.runnables.base import RunnableSequence
 
 
 AGENT = "agent"
@@ -30,7 +35,13 @@ EXTRACTION = "extraction"
 
 def create_tool_executor():
     return ToolExecutor(
-        [sql_list_tables, sql_info_tables, sql_query, sql_query_checker]
+        [
+            sql_list_tables,
+            sql_info_tables,
+            sql_query,
+            sql_query_checker,
+            numeric_stats_tool,
+        ]
     )
 
 
@@ -53,11 +64,6 @@ def should_continue(data):
     return "continue"
 
 
-def run_agent(data):
-    agent_outcome = agent_runnable.invoke(data)
-    return {AGENT_OUTCOME: agent_outcome}
-
-
 def run_extraction(data):
     agent_outcome = data["agent_outcome"]
     if isinstance(agent_outcome, AgentFinish):
@@ -69,7 +75,12 @@ def run_extraction(data):
         return {EXTRACTION_CONTENT: "No results"}
 
 
-def build_workflow(workflow: StateGraph):
+def build_workflow(workflow: StateGraph, agent_runnable: RunnableSequence):
+
+    def run_agent(data):
+        agent_outcome = agent_runnable.invoke(data)
+        return {AGENT_OUTCOME: agent_outcome}
+
     workflow.add_node(AGENT, run_agent)  # LLM
     workflow.add_node(ACTION, execute_tools)  # SQL tools
     workflow.add_node(EXTRACTION, run_extraction)  # Extraction
@@ -83,11 +94,13 @@ def build_workflow(workflow: StateGraph):
     workflow.add_edge(EXTRACTION, END)
 
 
-def create_app() -> Tuple[StateGraph, CompiledGraph]:
+def create_app(agent_runnable: RunnableSequence) -> Tuple[StateGraph, CompiledGraph]:
     workflow = StateGraph(AgentState)
-    build_workflow(workflow)
+    build_workflow(workflow, agent_runnable)
 
     return workflow, workflow.compile()
 
 
-workflow, app = create_app()
+workflow, app = create_app(agent_runnable)
+
+workflow_numeric, app_numeric = create_app(agent_runnable_numeric)
