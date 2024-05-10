@@ -12,7 +12,7 @@ from sql_validation_rules.agent.supervisor_factory import (
     supervisor_members,
     FINISH,
 )
-from sql_validation_rules.graph.graph_factory import create_app
+from sql_validation_rules.graph.graph_factory import create_app, agent_runnable, agent_runnable_numeric
 from sql_validation_rules.chain.sql_commands import SQLCommand
 
 
@@ -45,10 +45,10 @@ def create_supervisor_app() -> Tuple[StateGraph, CompiledGraph]:
 
     # Nodes
     workflow.add_node(SUPERVISOR, create_supervisor_chain())
-    agent_name = supervisor_members[0]
-    _, agent_app = create_app()
-    sql_validator_node = functools.partial(agent_node, agent=agent_app, name=agent_name)
-    workflow.add_node(agent_name, sql_validator_node)
+    for agent_name, runnable in zip(supervisor_members, [agent_runnable, agent_runnable_numeric]):
+        _, agent_app = create_app(runnable)
+        sql_validator_node = functools.partial(agent_node, agent=agent_app, name=agent_name)
+        workflow.add_node(agent_name, sql_validator_node)
 
     # Edges
 
@@ -58,7 +58,8 @@ def create_supervisor_app() -> Tuple[StateGraph, CompiledGraph]:
     conditional_map = {k: k for k in supervisor_members}
     conditional_map[FINISH] = END
     workflow.add_conditional_edges(SUPERVISOR, lambda x: x["next"], conditional_map)
-    workflow.add_edge(agent_name, SUPERVISOR)
+    for agent_name in supervisor_members:
+        workflow.add_edge(agent_name, SUPERVISOR)
 
     workflow.set_entry_point(SUPERVISOR)
 
@@ -66,18 +67,14 @@ def create_supervisor_app() -> Tuple[StateGraph, CompiledGraph]:
 
 
 if __name__ == "__main__":
-    workflow, app = create_supervisor_app()
+    
+    from sql_validation_rules.test.provider.supervisor_prompt_provider import create_until_repeat_cc_tax_percentage
+
+    workflow, supervisor_app = create_supervisor_app()
     print("app created")
 
-    prompt1 = """Please extract 2 SQL validation rules for column web_suite_number in table web_site."""
-    prompt2 = """Please extract SQL validation rules for column web_suite_number in table web_site as long as new ones can be found. 
-When you cannot find new ones stop"""
-    prompt3 = """Please extract SQL validation rules for column web_suite_number in table web_site as long as you can generate more meaningful rules. Stop when there are no more meaningful rules to generate on this field."""
-    prompt4 = """Please extract SQL validation rules for column web_suite_number in table web_site 
-as long as you can generate more meaningful rules. Stop when there are no more meaningful rules to generate on this field."""
-
     config = {"recursion_limit": 20}
-    input = {"messages": [HumanMessage(content=prompt2)]}
+    input = {"messages": [HumanMessage(content=create_until_repeat_cc_tax_percentage())]}
 
     def message_extractor(agent_result: dict) -> List[SQLCommand]:
         if "messages" in agent_result:
@@ -87,17 +84,19 @@ as long as you can generate more meaningful rules. Stop when there are no more m
         return []
 
     def stream_app():
-        for s in app.stream(input, config=config):
+        for s in supervisor_app.stream(input, config=config):
             if "__end__" not in s:
                 print(s)
                 print("----")
 
     def invoke_app() -> List[SQLCommand]:
-        res = app.invoke(input, config=config)
+        res = supervisor_app.invoke(input, config=config)
         print("*****************************************")
         print(res)
         return message_extractor(res)
 
-    commands = invoke_app()
-    for command in commands:
-        print(command)
+    # commands = invoke_app()
+    # for command in commands:
+    #     print(command)
+
+    stream_app()
