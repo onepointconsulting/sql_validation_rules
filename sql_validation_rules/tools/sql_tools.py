@@ -13,7 +13,14 @@ from langchain_core.tools import BaseTool
 
 from sql_validation_rules.config.config import cfg
 from sql_validation_rules.tools.list_columns_tool import ListIndicesSQLDatabaseTool
-from sql_validation_rules.tools.numeric_stats_tool import NumericStatsSQLDatabaseTool, TableColumn
+from sql_validation_rules.tools.numeric_stats_tool import (
+    NumericStatsSQLDatabaseTool,
+    TableColumn,
+)
+from sql_validation_rules.tools.table_column_info_tool import (
+    TableColumnInfoDatabaseTool,
+)
+from langchain_core.runnables.base import RunnableSequence
 
 db = sql_db_factory()
 
@@ -27,7 +34,13 @@ query_sql_checker: BaseTool = QuerySQLCheckerTool(db=db, llm=cfg.llm)
 
 query_columns_tool: BaseTool = ListIndicesSQLDatabaseTool(db=db)
 
-numeric_stats_tool: BaseTool = NumericStatsSQLDatabaseTool(db=db, args_schema=TableColumn)
+numeric_stats_tool: BaseTool = NumericStatsSQLDatabaseTool(
+    db=db, args_schema=TableColumn
+)
+
+table_column_info_tool: BaseTool = TableColumnInfoDatabaseTool(
+    db=db, args_schema=TableColumn
+)
 
 # Simplistic cache for the SQL list tables.
 sys.list_tables_cache = ""
@@ -65,6 +78,19 @@ def sql_query_checker(sql: str) -> str:
 def sql_query_columns(table_name: str) -> str:
     """Gets columns of a table as a JSON array"""
     return query_columns_tool(table_name)
+
+
+def create_table_info_runnable_sequence() -> RunnableSequence:
+    """Creates a runnable sequence for the table information column tool"""
+
+    from langchain_core.runnables import RunnableLambda
+
+    def last_step(content: str) -> str:
+        return content
+
+    return RunnableSequence(
+        first=table_column_info_tool, last=RunnableLambda(last_step)
+    )
 
 
 if __name__ == "__main__":
@@ -105,6 +131,17 @@ if __name__ == "__main__":
         assert isinstance(res, str)
         logger.info(f"Stats: {res}")
 
+    def call_table_column_info(table_col_dict: TableColumn):
+        logger.info(f"- Table: {table_col_dict}")
+        res = table_column_info_tool.run(table_col_dict.dict())
+        assert res is not None
+        logger.info(f"Table column res: {res}; type: {type(res)}")
+
+    def call_table_column_info_as_runnable_sequence(table_col_dict: TableColumn):
+        res = create_table_info_runnable_sequence().invoke(table_col_dict.dict())
+        assert res is not None
+        logger.info(f"Table column info res: {res}; type: {type(res)}")
+
     table_list_str = call_list_tables()
     assert numeric_stats_tool.args_schema is not None
     # call_sql_info_tables(table_list_str)
@@ -114,6 +151,7 @@ if __name__ == "__main__":
     # call_sql_query_checker("select from call_center")
     # table_list = [t.strip() for t in table_list_str.split(",")]
     # call_sql_query_columns(table_list[0])
-    call_sql_numeric_statistics(
-        TableColumn(table_name="call_center", column_name="cc_tax_percentage")
-    )
+    table_col = TableColumn(table="call_center", field="cc_tax_percentage")
+    call_sql_numeric_statistics(table_col)
+    call_table_column_info(table_col)
+    call_table_column_info_as_runnable_sequence(table_col)

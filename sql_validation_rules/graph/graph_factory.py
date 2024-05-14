@@ -4,6 +4,7 @@ from langchain_core.agents import AgentFinish
 from langgraph.prebuilt.tool_executor import ToolExecutor
 from langgraph.graph import END, StateGraph
 from langgraph.graph.graph import CompiledGraph
+from langchain_core.runnables.base import RunnableSequence
 
 from sql_validation_rules.tools.sql_tools import (
     sql_list_tables,
@@ -24,8 +25,8 @@ from sql_validation_rules.agent.agent_state import (
     EXTRACTION_CONTENT,
 )
 from sql_validation_rules.chain.command_extraction_factory import extraction_chain
-from sql_validation_rules.chain.sql_commands import SQLCommands
-from langchain_core.runnables.base import RunnableSequence
+from sql_validation_rules.chain.sql_commands import SQLCommands, SQLCommand
+from sql_validation_rules.tools.simple_sql_extractor import extract_sql_markdown
 
 
 AGENT = "agent"
@@ -68,9 +69,19 @@ def run_extraction(data):
     agent_outcome = data["agent_outcome"]
     if isinstance(agent_outcome, AgentFinish):
         output = agent_outcome.return_values["output"]
-        outcome = extraction_chain.invoke(output)
-        sql_commands: SQLCommands = outcome["function"]
-        return {EXTRACTION_CONTENT: sql_commands.validation_commands}
+        try:
+            outcome = extraction_chain.invoke(output)
+            sql_commands: SQLCommands = outcome["function"]
+            return {EXTRACTION_CONTENT: sql_commands.validation_commands}
+        except Exception as e:
+            logger.exception("Could not extract SQL with LLM")
+            captured = extract_sql_markdown(output)
+            return {
+                EXTRACTION_CONTENT: [
+                    SQLCommand(validation_command=sql, validation_type="")
+                    for sql in captured
+                ]
+            }
     else:
         return {EXTRACTION_CONTENT: "No results"}
 

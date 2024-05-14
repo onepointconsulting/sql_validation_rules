@@ -1,1 +1,0 @@
-from sql_validation_rules.graph.supervisor_graph_factory import create_app

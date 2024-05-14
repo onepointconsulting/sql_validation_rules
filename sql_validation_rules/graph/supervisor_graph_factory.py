@@ -4,6 +4,7 @@ import functools
 from langchain_core.messages import HumanMessage
 from langgraph.graph import END, StateGraph
 from langgraph.graph.graph import CompiledGraph
+from langchain_core.runnables.base import RunnableSequence
 from langchain_core.agents import AgentFinish
 
 from sql_validation_rules.agent.agent_state import AgentState, AGENT_OUTCOME
@@ -12,8 +13,13 @@ from sql_validation_rules.agent.supervisor_factory import (
     supervisor_members,
     FINISH,
 )
-from sql_validation_rules.graph.graph_factory import create_app, agent_runnable, agent_runnable_numeric
+from sql_validation_rules.graph.graph_factory import (
+    create_app,
+    agent_runnable,
+    agent_runnable_numeric,
+)
 from sql_validation_rules.chain.sql_commands import SQLCommand
+from sql_validation_rules.tools.sql_tools import create_table_info_runnable_sequence
 
 
 SUPERVISOR = "supervisor"
@@ -24,7 +30,7 @@ def create_if_missing(state: dict, key: str):
         state[key] = []
 
 
-def agent_node(state: dict, agent: CompiledGraph, name: str):
+def agent_node(state: dict, agent: CompiledGraph, name: str) -> dict:
     create_if_missing(state, "chat_history")
     create_if_missing(state, "intermediate_steps")
     result = agent.invoke(state)
@@ -40,15 +46,36 @@ def agent_node(state: dict, agent: CompiledGraph, name: str):
     return {"messages": [HumanMessage(content=content, name=name)]}
 
 
+def runnable_sequence_node(state: dict, tool: RunnableSequence, name: str):
+    create_if_missing(state, "chat_history")
+    create_if_missing(state, "intermediate_steps")
+    result = tool.invoke(state)
+    return {"messages": [HumanMessage(content=str(result), name=name)]}
+
+
 def create_supervisor_app() -> Tuple[StateGraph, CompiledGraph]:
     workflow = StateGraph(AgentState)
 
     # Nodes
     workflow.add_node(SUPERVISOR, create_supervisor_chain())
-    for agent_name, runnable in zip(supervisor_members, [agent_runnable, agent_runnable_numeric]):
+    # Setup the agents
+    agent_names = [sm for sm in supervisor_members if not "tool" in sm]
+    for agent_name, runnable in zip(
+        agent_names, [agent_runnable, agent_runnable_numeric]
+    ):
         _, agent_app = create_app(runnable)
-        sql_validator_node = functools.partial(agent_node, agent=agent_app, name=agent_name)
+        sql_validator_node = functools.partial(
+            agent_node, agent=agent_app, name=agent_name
+        )
         workflow.add_node(agent_name, sql_validator_node)
+
+    # Set up the tools
+    tool_names = [sm for sm in supervisor_members if "tool" in sm]
+    for tool_name, runnable in zip(tool_names, [create_table_info_runnable_sequence()]):
+        tool_node = functools.partial(
+            runnable_sequence_node, tool=runnable, name=tool_name
+        )
+        workflow.add_node(tool_name, tool_node)
 
     # Edges
 
@@ -64,39 +91,3 @@ def create_supervisor_app() -> Tuple[StateGraph, CompiledGraph]:
     workflow.set_entry_point(SUPERVISOR)
 
     return workflow, workflow.compile()
-
-
-if __name__ == "__main__":
-    
-    from sql_validation_rules.test.provider.supervisor_prompt_provider import create_until_repeat_cc_tax_percentage
-
-    workflow, supervisor_app = create_supervisor_app()
-    print("app created")
-
-    config = {"recursion_limit": 20}
-    input = {"messages": [HumanMessage(content=create_until_repeat_cc_tax_percentage())]}
-
-    def message_extractor(agent_result: dict) -> List[SQLCommand]:
-        if "messages" in agent_result:
-            messages = agent_result["messages"]
-            if len(messages) > 1:
-                return [SQLCommand.parse_raw(r.content) for r in messages[1:]]
-        return []
-
-    def stream_app():
-        for s in supervisor_app.stream(input, config=config):
-            if "__end__" not in s:
-                print(s)
-                print("----")
-
-    def invoke_app() -> List[SQLCommand]:
-        res = supervisor_app.invoke(input, config=config)
-        print("*****************************************")
-        print(res)
-        return message_extractor(res)
-
-    # commands = invoke_app()
-    # for command in commands:
-    #     print(command)
-
-    stream_app()
