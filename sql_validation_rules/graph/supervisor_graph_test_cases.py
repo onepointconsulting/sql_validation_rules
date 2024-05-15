@@ -54,4 +54,4 @@ if __name__ == "__main__":
     def specify_type():
         execute_test(create_until_repeat_cc_tax_percentage_no_type())
 
-    create_unspecified_rules()
+    specify_type()

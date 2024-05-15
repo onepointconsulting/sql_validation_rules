@@ -23,8 +23,10 @@ class Config:
     project_root = Path(os.getenv("PROJECT_ROOT", "/home/ubuntu"))
     assert project_root.exists(), f"{project_root} does not exist."
 
+    model = os.getenv("OPENAI_API_MODEL", "gpt-3.5-turbo-1106")
+    logger.info(f"model: {model}")
     llm = ChatOpenAI(
-        model=os.getenv("OPENAI_API_MODEL", "gpt-3.5-turbo-1106"),
+        model=model,
         temperature=float(os.getenv("OPENAI_API_TEMPERATURE")),
     )
     verbose_llm = bool(os.getenv("VERBOSE_LLM", "True"))
@@ -36,3 +38,4 @@ cfg = Config()
 if __name__ == "__main__":
     assert cfg.snowflake_config.snowflake_account is not None
     logger.info(f"Using account: {cfg.snowflake_config.snowflake_account}")
+    
