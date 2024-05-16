@@ -6,9 +6,12 @@ from sql_validation_rules.config.config import cfg
 FUNCTION_NAME = "route"
 FINISH = "FINISH"
 
+VALIDATOR_MAIN_VALIDATOR = "SQL_Validator"
+VALIDATOR_SQL_NUMERIC_VALIDATOR = "SQL_Numeric_Statistical_Validator"
+
 supervisor_members = [
-    "SQL_Validator",
-    "SQL_Numeric_Statistical_Validator",
+    VALIDATOR_MAIN_VALIDATOR,
+    VALIDATOR_SQL_NUMERIC_VALIDATOR,
     "Table_column_tool",
 ]
 

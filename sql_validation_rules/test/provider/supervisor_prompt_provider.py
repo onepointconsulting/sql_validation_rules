@@ -24,4 +24,4 @@ When you cannot find new ones stop"""
 def create_until_repeat_cc_tax_percentage_no_type():
     return """Please extract SQL validation rules for column cc_tax_percentage in table call_center as long as new ones can be found. 
 When you cannot find new ones stop. Make sure you find out details about the column before you choose which validator to take. 
-If the type of the field is decimal you should use the statistical SQL validation"""
+If the type of the field is decimal you should use the statistical SQL validation."""

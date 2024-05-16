@@ -37,6 +37,7 @@ class Config:
         temperature=float(os.getenv("OPENAI_API_TEMPERATURE")),
     )
     verbose_llm = bool(os.getenv("VERBOSE_LLM", "True"))
+    recursion_limit = int(os.getenv("RECURSION_LIMIT", "20"))
     snowflake_config = SnowflakeConfig()
     langfuse_config = LangfuseConfig()
 
@@ -46,4 +47,3 @@ cfg = Config()
 if __name__ == "__main__":
     assert cfg.snowflake_config.snowflake_account is not None
     logger.info(f"Using account: {cfg.snowflake_config.snowflake_account}")
-    

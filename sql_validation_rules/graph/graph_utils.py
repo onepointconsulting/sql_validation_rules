@@ -1,12 +1,21 @@
 from typing import List, Dict, Union, Any
-from sql_validation_rules.graph.graph_factory import app
+from typing import Dict, Any, Generator
+
 from langgraph.graph.graph import CompiledGraph
+from langchain_core.messages import HumanMessage
+
+from sql_validation_rules.graph.graph_factory import app
 from sql_validation_rules.chain.sql_commands import SQLCommand
 from sql_validation_rules.config.log_factory import logger
+from sql_validation_rules.config.toml_support import prompts
 
 
-def stream_outputs(inputs: Dict[str, any], app: CompiledGraph = app):
-    for s in app.stream(inputs):
+def stream_outputs(
+    inputs: Dict[str, any],
+    config: dict,
+    app: CompiledGraph = app,
+) -> Generator[Any, None, None]:
+    for s in app.stream(inputs, config=config):
         content = list(s.values())[0]
         yield content
 
@@ -27,3 +36,12 @@ def message_extractor(agent_result: dict) -> List[SQLCommand]:
                     logger.exception(f"Cannot extract {r.content}")
             return results
     return []
+
+
+def create_human_message(input_str: str) -> dict:
+    return {"messages": [HumanMessage(content=input_str)]}
+
+
+def create_supervisor_message(table: str, column: str) -> dict:
+    initial_message = prompts["sql_validation"]["supervisor"]["initial"]["human_message"]
+    return initial_message.format(table=table, column=column)

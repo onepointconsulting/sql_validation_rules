@@ -4,11 +4,20 @@ import click
 import json
 
 from sql_validation_rules.tools.sql_tools import sql_query_columns, sql_list_tables
-from sql_validation_rules.graph.graph_utils import stream_outputs, invoke_app
+from sql_validation_rules.graph.graph_utils import invoke_app, create_human_message, create_supervisor_message
 from sql_validation_rules.config.config import logger
 from sql_validation_rules.chain.sql_commands import SQLCommand
-from sql_validation_rules.agent.agent_state import FIELD_EXCLUSION_RULES
+from sql_validation_rules.graph.supervisor_graph_factory import create_supervisor_app
+from sql_validation_rules.agent.supervisor_factory import VALIDATOR_MAIN_VALIDATOR, VALIDATOR_SQL_NUMERIC_VALIDATOR
+from sql_validation_rules.config.config import cfg
+from sql_validation_rules.observability.langfuse_factory import create_langfuse_handler
 
+
+langfuse_handler = create_langfuse_handler()
+config = {
+    "recursion_limit": cfg.recursion_limit,
+    "callbacks": [langfuse_handler] if cfg.langfuse_config.langfuse_tracing else [],
+}
 
 @click.group()
 @click.pass_context
@@ -34,6 +43,13 @@ def cli(ctx):
 )
 def generate_rules(table: str, file: str, hide_steps: bool, count: int):
     """Generates rules for all fields in a table"""
+
+    def extract_sql_command(messages: list) -> str:
+        if len(messages) > 0 and len(messages[-1].content) > 0:
+            sql_command = SQLCommand.parse_raw(messages[-1].content)
+            return f"\n--{sql_command.validation_type}\n{sql_command.validation_command}"
+        return ""
+
     output_file = Path(file)
     if output_file.exists():
         # rename the file
@@ -41,40 +57,30 @@ def generate_rules(table: str, file: str, hide_steps: bool, count: int):
     with open(output_file, "w") as f:
         col_json = sql_query_columns(table)
         cols = json.loads(col_json)
+        _, supervisor_app = create_supervisor_app()
         for i, col in enumerate(cols):
             sep = "\n\n" if i > 0 else ""
             col_name = col["name"]
             f.write(f"{sep}# {table} - {col_name}\n")
-            exclusion_rule = ""
-            for c in range(count):
-                inputs = {
-                    "table": table,
-                    "field": col_name,
-                    "chat_history": [],
-                    FIELD_EXCLUSION_RULES: exclusion_rule,
-                }
-                try:
-                    last_content = ""
-                    for content in stream_outputs(inputs):
-                        if not hide_steps:
-                            f.write("\n -------------------- \n")
-                            f.write(f"{content}")
-                        if "extraction_content" in content:
-                            sql_commands: List[SQLCommand] = content[
-                                "extraction_content"
-                            ]
-                            last_content = "\n".join([repr(s) for s in sql_commands])
-                            exclusion_rule = ",".join(
-                                s.validation_type for s in sql_commands
-                            )
-                        f.flush()
-
-                    f.write(f"\n\n{last_content}\n\n")
+            inputs = create_human_message(create_supervisor_message(table, col_name))
+            try:
+                last_content = ""
+                for content in supervisor_app.stream(inputs, config):
+                    if not hide_steps:
+                        f.write("\n -------------------- \n")
+                        f.write(f"{content}")
+                    if VALIDATOR_MAIN_VALIDATOR in content:
+                        last_content += extract_sql_command(content[VALIDATOR_MAIN_VALIDATOR]['messages'])
+                    elif VALIDATOR_SQL_NUMERIC_VALIDATOR in content:
+                        last_content += extract_sql_command(content[VALIDATOR_SQL_NUMERIC_VALIDATOR]['messages'])
                     f.flush()
-                except Exception as e:
-                    msg = f"Failed to process {inputs}. Reason: {e}"
-                    logger.exception(msg)
-                    f.write(msg)
+
+                f.write(f"\n\n{last_content}\n\n")
+                f.flush()
+            except Exception as e:
+                msg = f"Failed to process {inputs}. Reason: {e}"
+                logger.exception(msg)
+                f.write(msg)
 
 
 @cli.command()

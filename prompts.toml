@@ -56,3 +56,10 @@ Can you generate SQL validation query for numeric field for table {table} and fi
 
 {text}
 """
+
+    [sql_validation.supervisor.initial]
+    human_message = """
+Please extract SQL validation rules for column {column} in table {table} as long as new ones can be found. 
+When you cannot find new ones stop. Make sure you find out details about the column before you choose which validator to take. 
+If the type of the field is decimal and is not a primary or a foreign key you should use the statistical SQL validation.
+"""
