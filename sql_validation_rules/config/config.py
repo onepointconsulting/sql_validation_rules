@@ -19,6 +19,13 @@ class SnowflakeConfig:
     snowflake_host = os.getenv("SNOWFLAKE_HOST")
 
 
+class LangfuseConfig:
+    langfuse_tracing = os.getenv("LANGFUSE_TRACING") == "true"
+    langfuse_public_key = os.getenv("LANGFUSE_PUBLIC_KEY")
+    langfuse_secret_key = os.getenv("LANGFUSE_SECRET_KEY")
+    langfuse_host = os.getenv("LANGFUSE_HOST")
+
+
 class Config:
     project_root = Path(os.getenv("PROJECT_ROOT", "/home/ubuntu"))
     assert project_root.exists(), f"{project_root} does not exist."
@@ -31,6 +38,7 @@ class Config:
     )
     verbose_llm = bool(os.getenv("VERBOSE_LLM", "True"))
     snowflake_config = SnowflakeConfig()
+    langfuse_config = LangfuseConfig()
 
 
 cfg = Config()

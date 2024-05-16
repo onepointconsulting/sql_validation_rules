@@ -7,9 +7,17 @@ from sql_validation_rules.test.provider.supervisor_prompt_provider import (
     create_until_repeat_cc_tax_percentage_no_type,
 )
 from sql_validation_rules.config.log_factory import logger
+from sql_validation_rules.config.config import cfg
 from sql_validation_rules.graph.supervisor_graph_factory import create_supervisor_app
 from sql_validation_rules.chain.sql_commands import SQLCommand
 from sql_validation_rules.graph.graph_utils import message_extractor
+from langfuse.callback import CallbackHandler
+
+langfuse_handler = CallbackHandler(
+    public_key=cfg.langfuse_config.langfuse_public_key,
+    secret_key=cfg.langfuse_config.langfuse_secret_key,
+    host=cfg.langfuse_config.langfuse_host
+)
 
 
 if __name__ == "__main__":
@@ -17,7 +25,7 @@ if __name__ == "__main__":
     workflow, supervisor_app = create_supervisor_app()
     print("app created")
 
-    config = {"recursion_limit": 20}
+    config = {"recursion_limit": 20, "callbacks": [langfuse_handler] if cfg.langfuse_config.langfuse_tracing else []}
 
     def create_message(input_str: str):
         return {"messages": [HumanMessage(content=input_str)]}
