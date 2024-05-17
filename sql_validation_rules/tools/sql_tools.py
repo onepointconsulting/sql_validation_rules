@@ -14,6 +14,7 @@ from langchain_core.tools import BaseTool
 from sql_validation_rules.config.config import cfg
 from sql_validation_rules.tools.list_columns_tool import ListIndicesSQLDatabaseTool
 from sql_validation_rules.tools.sql_numeric_stats_tool import NumericColumnStatsSQLDatabaseTool
+from sql_validation_rules.tools.sql_stats_string import CalcStatsForStringCols
 
 db = sql_db_factory()
 
@@ -28,6 +29,7 @@ query_sql_checker: BaseTool = QuerySQLCheckerTool(db=db, llm=cfg.llm)
 query_columns_tool: BaseTool = ListIndicesSQLDatabaseTool(db=db)
 
 query_numeric_stats: BaseTool = NumericColumnStatsSQLDatabaseTool(db=db)
+query_str_cols_stats: BaseTool = CalcStatsForStringCols(db=db)
 
 # Simplistic cache for the SQL list tables.
 sys.list_tables_cache = ""
@@ -66,6 +68,12 @@ def sql_query_columns(table_name: str) -> str:
     """Gets columns of a table as a JSON array"""
     return query_columns_tool(table_name)
 
+@tool("calc_str_cols_stats", return_direct=True)
+def calc_str_cols_stats(table_name: str) -> str:
+    """Gets columns of a table as a JSON array"""
+    return query_str_cols_stats(table_name)
+
+
 if __name__ == "__main__":
 
     from sql_validation_rules.config.log_factory import logger
@@ -95,6 +103,12 @@ if __name__ == "__main__":
         res = sql_query_columns(table_name)
         logger.info(type(res))
         logger.info(f"SQL query columns result: {res}")
+        
+    def call_calc_str_col_stats(table_name: str):
+        logger.info(f"- Table: {table_name}")
+        res = calc_str_cols_stats(table_name)
+        logger.info(type(res))
+        logger.info(f"SQL query columns result: {res}")        
 
     def call_sql_numeric_stats(table_name: str):
         logger.info(f"- Table: {table_name}")
@@ -111,9 +125,7 @@ if __name__ == "__main__":
     # call_sql_query(query)
     # call_sql_query_checker(query)
     # call_sql_query_checker("select from call_center")
-    # table_list = [t.strip() for t in table_list_str.split(",")]
-    # call_sql_query_columns(table_list[0])
-
-
-    call_sql_numeric_stats("WAREHOUSE")
-
+    #table_list = [t.strip() for t in table_list_str.split(",")]
+    #call_sql_query_columns(table_list[0])
+    
+    call_calc_str_col_stats("call_center")
