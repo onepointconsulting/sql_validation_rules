@@ -28,8 +28,8 @@ query_sql_checker: BaseTool = QuerySQLCheckerTool(db=db, llm=cfg.llm)
 
 query_columns_tool: BaseTool = ListIndicesSQLDatabaseTool(db=db)
 
-query_numeric_stats: BaseTool = NumericColumnStatsSQLDatabaseTool(db=db)
-query_str_cols_stats: BaseTool = CalcStatsForStringCols(db=db)
+query_numeric_columns_stats: BaseTool = NumericColumnStatsSQLDatabaseTool(db=db)
+query_string_columns_stats: BaseTool = CalcStatsForStringCols(db=db)
 
 # Simplistic cache for the SQL list tables.
 sys.list_tables_cache = ""
@@ -68,11 +68,16 @@ def sql_query_columns(table_name: str) -> str:
     """Gets columns of a table as a JSON array"""
     return query_columns_tool(table_name)
 
-@tool("calc_str_cols_stats", return_direct=True)
-def calc_str_cols_stats(table_name: str) -> str:
-    """Gets columns of a table as a JSON array"""
-    return query_str_cols_stats(table_name)
+@tool("calc_string_column_stats", return_direct=True)
+def calc_string_column_stats(table_name: str) -> str:
+    """Gets column stats of string fields of a table as a JSON object"""
+    return query_string_columns_stats(table_name)
 
+
+@tool("calc_numeric_column_stats", return_direct=True)
+def calc_numeric_column_stats(table_name: str) -> str:
+    """Gets column stats of numeric fields of a table as a JSON object"""
+    return query_numeric_columns_stats(table_name)
 
 if __name__ == "__main__":
 
@@ -106,16 +111,13 @@ if __name__ == "__main__":
         
     def call_calc_str_col_stats(table_name: str):
         logger.info(f"- Table: {table_name}")
-        res = calc_str_cols_stats(table_name)
+        res = calc_numeric_column_stats(table_name)
         logger.info(type(res))
         logger.info(f"SQL query columns result: {res}")        
 
     def call_sql_numeric_stats(table_name: str):
         logger.info(f"- Table: {table_name}")
-        #logger.info(f"- Column: {column_name}")
-        #res = query_numeric_stats(table_name,column_name)
-        res = query_numeric_stats(table_name)
-        print(res)
+        res = calc_numeric_column_stats(table_name)
         logger.info(type(res))
         logger.info(f"Numeric Stats result: {res}")        
 
@@ -128,4 +130,4 @@ if __name__ == "__main__":
     #table_list = [t.strip() for t in table_list_str.split(",")]
     #call_sql_query_columns(table_list[0])
     
-    call_calc_str_col_stats("call_center")
+    #call_calc_str_col_stats("call_center")

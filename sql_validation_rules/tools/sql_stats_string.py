@@ -34,7 +34,7 @@ class CalcStatsForStringCols(BaseSQLDatabaseTool, BaseTool):
                 query = f"select count({col}) as count_not_null, count(*) as count_with_nulls, count(distinct {col}) as count_distinct_values, min({col}) as min_value , max({col}) as max_value, mode({col}) as most_frequent_value, min(len({col})) as min_length_of_values, avg(len({col}))::string as average_length_of_values, max(len({col})) as max_length_of_values from {table_name}"  
                 res = self.db._execute(query)
                 stats[col] = res[0]  
-                print(stats[col])
+                #print(stats[col])
             return dumps(stats)            
         except Exception as e:
             return f"Error: {e}"

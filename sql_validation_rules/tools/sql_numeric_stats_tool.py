@@ -12,9 +12,9 @@ class NumericColumnStatsSQLDatabaseTool(BaseSQLDatabaseTool, BaseTool):
     """Tool for executing statistical queries for a numeric column of a table."""
 
     name = "sql_db_numeric_statistics"
-    description = """Input is a table name and column name, output are the results of statistical queries for that column
+    description = """Input is a table name, output is a json string with the statistics for numeric columns of the table.
 
-    Example Input: "table_name" "column_name"
+    Example Input: "table_name"
     """
     def _run(
         self,
@@ -31,7 +31,7 @@ class NumericColumnStatsSQLDatabaseTool(BaseSQLDatabaseTool, BaseTool):
             for nc in numeric_columns:
                #column_name: str ="W_WAREHOUSE_SQ_FT"
                column_name: str =nc["name"]
-               stats_query: str = f"select count({column_name}) as CountNotNull, count(*) - count({column_name}) as CountNull, count(distinct {column_name})  as CountDistinct, min({column_name})::string as MinValue, max({column_name})::string as MaxValue  , mode({column_name})::string as ModeValue from {table_name}"
+               stats_query: str = f"select count({column_name}) as count_not_null, count(*) - count({column_name}) as count_of_nulls, count(distinct {column_name})  as count_distinct_values, min({column_name})::string as min_value, max({column_name})::string as max_value  , mode({column_name})::string as most_frequent_value from {table_name}"
                #stats_query_result:str = self.db._execute(stats_query)
                stats[column_name] = self.db._execute(stats_query)[0]
                #print(stats[column_name])
