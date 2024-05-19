@@ -53,10 +53,10 @@ python ./sql_validation_rules/cli/main.py generate-rules --table inventory -f in
 python ./sql_validation_rules/cli/main.py generate-rules --table inventory -f inventory.txt --hide_steps --count 2
 ```
 
-Generate validation rules for table reason:
+Generate validation rules for table call_center:
 
 ```bash
-python ./sql_validation_rules/cli/main.py generate-rules --table reason -f reason.txt
+python .\sql_validation_rules\cli\main.py generate-rules -t call_center -f call_center.txt
 ```
 
 Generate validation rule for a specific column in a table excluding some rule types:

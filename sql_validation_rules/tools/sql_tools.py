@@ -150,8 +150,8 @@ if __name__ == "__main__":
     # call_sql_query_checker(query)
     # call_sql_query_checker("select from call_center")
     # table_list = [t.strip() for t in table_list_str.split(",")]
-    # call_sql_query_columns(table_list[0])
-    table_col = TableColumn(table="call_center", field="cc_tax_percentage")
-    call_sql_numeric_statistics(table_col)
-    call_table_column_info(table_col)
-    call_table_column_info_as_runnable_sequence(table_col)
+    call_sql_query_columns("customer")
+    # table_col = TableColumn(table="call_center", field="cc_tax_percentage")
+    # call_sql_numeric_statistics(table_col)
+    # call_table_column_info(table_col)
+    # call_table_column_info_as_runnable_sequence(table_col)

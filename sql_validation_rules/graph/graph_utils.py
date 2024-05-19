@@ -43,5 +43,7 @@ def create_human_message(input_str: str) -> dict:
 
 
 def create_supervisor_message(table: str, column: str) -> dict:
-    initial_message = prompts["sql_validation"]["supervisor"]["initial"]["human_message"]
+    initial_message = prompts["sql_validation"]["supervisor"]["initial"][
+        "human_message"
+    ]
     return initial_message.format(table=table, column=column)

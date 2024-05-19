@@ -9,7 +9,11 @@ from sql_validation_rules.config.log_factory import logger
 from sql_validation_rules.config.config import cfg
 from sql_validation_rules.graph.supervisor_graph_factory import create_supervisor_app
 from sql_validation_rules.chain.sql_commands import SQLCommand
-from sql_validation_rules.graph.graph_utils import message_extractor, create_human_message, create_supervisor_message
+from sql_validation_rules.graph.graph_utils import (
+    message_extractor,
+    create_human_message,
+    create_supervisor_message,
+)
 from sql_validation_rules.observability.langfuse_factory import create_langfuse_handler
 
 
