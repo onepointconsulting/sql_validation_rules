@@ -28,7 +28,7 @@ st.markdown(
 st.title("SQL Rule Generator")
 
 # Create three columns
-table_col, field_col, results_col = st.columns(3)
+table_col, field_col, results_col = st.columns([0.25, 0.25, 0.5])
 
 
 class SessionKeys(StrEnum):
