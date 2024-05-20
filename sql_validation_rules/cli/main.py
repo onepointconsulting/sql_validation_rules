@@ -7,6 +7,9 @@ from sql_validation_rules.tools.sql_tools import sql_query_columns, sql_list_tab
 from sql_validation_rules.graph.graph_utils import (
     create_human_message,
     create_supervisor_message,
+    invoke_column_rule,
+    extract_sql_command,
+    generate_supervisor_config,
 )
 from sql_validation_rules.config.config import logger
 from sql_validation_rules.chain.sql_commands import SQLCommand
@@ -15,15 +18,9 @@ from sql_validation_rules.agent.supervisor_factory import (
     VALIDATOR_MAIN_VALIDATOR,
     VALIDATOR_SQL_NUMERIC_VALIDATOR,
 )
-from sql_validation_rules.config.config import cfg
-from sql_validation_rules.observability.langfuse_factory import create_langfuse_handler
 
 
-langfuse_handler = create_langfuse_handler()
-config = {
-    "recursion_limit": cfg.recursion_limit,
-    "callbacks": [langfuse_handler] if cfg.langfuse_config.langfuse_tracing else [],
-}
+config = generate_supervisor_config()
 
 
 @click.group()
@@ -134,7 +131,7 @@ def list_columns(table: str):
 )
 def generate_column_rule(table: str, column: str):
     "Generate a single rule for a column"
-    res = invoke_column_rule(table, column)
+    res = invoke_column_rule(table, column, config)
     extraction_content = extract_sql_command(res["messages"])
     if extraction_content:
         print("Validation type:")
@@ -142,20 +139,6 @@ def generate_column_rule(table: str, column: str):
         print()
     else:
         print("No validation available.")
-
-
-def invoke_column_rule(table: str, column: str):
-    inputs = create_human_message(create_supervisor_message(table, column))
-    _, supervisor_app = create_supervisor_app()
-    res = supervisor_app.invoke(inputs, config=config)
-    return res
-
-
-def extract_sql_command(messages: list) -> str:
-    if len(messages) > 0 and len(messages[-1].content) > 0:
-        sql_command = SQLCommand.parse_raw(messages[-1].content)
-        return f"\n--{sql_command.validation_type}\n{sql_command.validation_command}"
-    return ""
 
 
 def extract_content(res: dict) -> Union[SQLCommand, None]:

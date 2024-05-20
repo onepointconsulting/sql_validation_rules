@@ -7,7 +7,10 @@ from langchain_core.messages import HumanMessage
 from sql_validation_rules.graph.graph_factory import app
 from sql_validation_rules.chain.sql_commands import SQLCommand
 from sql_validation_rules.config.log_factory import logger
+from sql_validation_rules.config.config import cfg
 from sql_validation_rules.config.toml_support import prompts
+from sql_validation_rules.graph.supervisor_graph_factory import create_supervisor_app
+from sql_validation_rules.observability.langfuse_factory import create_langfuse_handler
 
 
 def stream_outputs(
@@ -47,3 +50,31 @@ def create_supervisor_message(table: str, column: str) -> dict:
         "human_message"
     ]
     return initial_message.format(table=table, column=column)
+
+
+def invoke_column_rule(table: str, column: str, config: dict):
+    inputs = create_human_message(create_supervisor_message(table, column))
+    _, supervisor_app = create_supervisor_app()
+    res = supervisor_app.invoke(inputs, config=config)
+    return res
+
+
+def extract_sql_command(messages: list) -> str:
+    if len(messages) > 0 and len(messages[-1].content) > 0:
+        acc = ""
+        for message in messages[1:]:
+            try:
+                sql_command = SQLCommand.parse_raw(message.content)
+                acc += f"\n## {sql_command.validation_type}\n{sql_command.validation_command}\n"
+            except Exception as e:
+                logger.warn("Could not extract sql command from {message.content}.")
+        return acc
+    return ""
+
+
+def generate_supervisor_config() -> dict:
+    langfuse_handler = create_langfuse_handler()
+    return {
+        "recursion_limit": cfg.recursion_limit,
+        "callbacks": [langfuse_handler] if cfg.langfuse_config.langfuse_tracing else [],
+    }
