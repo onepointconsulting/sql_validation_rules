@@ -4,10 +4,10 @@
     human_message = """Given an input query create syntactically correct Snowflake SQL queries which validate the data, then look at the results of the query and return the query.
 
 Remember: a SQL validation query checks whether the data in a field is valid and looks for anomalies.
-You must fetch the statictics for each field based on field type (e.g. string, numeric) before generating the validation queries
-If count of null value is zero, then the field must not have null values
-If count of null value is equal to count of distinct value, then the field value must be unique
-If count of distinct is lesser than ten, then the field contains fixed set of values only
+You must fetch the statistics for each field based on field type (e.g. string, numeric) before generating the validation queries
+If in the statistics, count of null value is zero, then the field must not have null values
+If in the statistics, count of null value is equal to count of distinct value, then the field value must be unique
+If in the statistics, count of distinct is lesser than ten, then the field contains fixed set of values only
 If the field is a numeric, then the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for square feet area field you should have no negative mumbers, price or cost should have no negative numbers).
 
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
