@@ -8,6 +8,8 @@ from sql_validation_rules.tools.sql_tools import (
     sql_query,
     sql_query_checker,
     sql_info_tables,
+    calc_string_column_stats,
+    calc_numeric_column_stats,
 )
 from sql_validation_rules.agent.prompt_factory import create_sql_validation_template
 from sql_validation_rules.agent.agent_state import FIELD_EXCLUSION_RULES
@@ -18,7 +20,7 @@ def create_agent_runnable() -> RunnableSequence:
     return create_openai_functions_agent(
         llm=cfg.llm,
         prompt=create_sql_validation_template(),
-        tools=[sql_info_tables, sql_query, sql_query_checker],
+        tools=[sql_info_tables, calc_string_column_stats, calc_numeric_column_stats, sql_query, sql_query_checker],
     )
 
 

@@ -70,13 +70,13 @@ def sql_query_columns(table_name: str) -> str:
 
 @tool("calc_string_column_stats", return_direct=True)
 def calc_string_column_stats(table_name: str) -> str:
-    """Gets column stats of string fields of a table as a JSON object"""
+    """Gets column statistics of string fields of a table as a JSON object"""
     return query_string_columns_stats(table_name)
 
 
 @tool("calc_numeric_column_stats", return_direct=True)
 def calc_numeric_column_stats(table_name: str) -> str:
-    """Gets column stats of numeric fields of a table as a JSON object"""
+    """Gets column statistics of numeric fields of a table as a JSON object"""
     return query_numeric_columns_stats(table_name)
 
 if __name__ == "__main__":
@@ -130,4 +130,4 @@ if __name__ == "__main__":
     #table_list = [t.strip() for t in table_list_str.split(",")]
     #call_sql_query_columns(table_list[0])
     
-    #call_calc_str_col_stats("call_center")
+    call_calc_str_col_stats("warehouse")
