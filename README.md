@@ -89,3 +89,9 @@ On Windows you can start the user interface by executing this script:
 ```ps1
 .\start_ui.ps1
 ```
+
+## Agent Structure
+
+The structure of the agent looks like this:
+
+![Supervisor agent with two agents and tool](docs/supervisor_agent.png "Supervisor agent structure")
