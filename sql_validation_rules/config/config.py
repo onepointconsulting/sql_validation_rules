@@ -41,6 +41,8 @@ class Config:
     snowflake_config = SnowflakeConfig()
     langfuse_config = LangfuseConfig()
 
+    langsmith_project_url = os.getenv("LANGSMITH_PROJECT_URL")
+
 
 cfg = Config()
 

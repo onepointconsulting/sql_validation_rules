@@ -65,7 +65,13 @@ def extract_sql_command(messages: list) -> str:
         for message in messages[1:]:
             try:
                 sql_command = SQLCommand.parse_raw(message.content)
-                acc += f"\n## {sql_command.validation_type}\n{sql_command.validation_command}\n"
+                acc += f"""
+## {sql_command.validation_type}
+
+```sql
+{sql_command.validation_command}
+```
+"""
             except Exception as e:
                 logger.warn("Could not extract sql command from {message.content}.")
         return acc

@@ -83,3 +83,9 @@ You can start the user interface using the following command:
 ```bash
 streamlit run ./sql_validation_rules/ui/streamlit_main.py
 ```
+
+On Windows you can start the user interface by executing this script:
+
+```ps1
+.\start_ui.ps1
+```

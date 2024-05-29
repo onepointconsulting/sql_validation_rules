@@ -9,6 +9,8 @@ from sql_validation_rules.graph.graph_utils import (
     invoke_column_rule,
     extract_sql_command,
 )
+from sql_validation_rules.config.log_factory import logger
+from sql_validation_rules.config.config import cfg
 
 config = generate_supervisor_config()
 
@@ -74,6 +76,7 @@ with table_col:
         if st.button(t):
             st.session_state[SessionKeys.TABLE] = t
             st.session_state[SessionKeys.COLUMNS] = retrieve_cols(t)
+            st.session_state[SessionKeys.COLUMN] = ""
 
 
 # Used to display the columns
@@ -88,7 +91,7 @@ with field_col:
 
 # Used to display the selected column
 with results_col:
-    st.header("Column Details")
+    st.header("Generate Rules")
     if (
         len(st.session_state["selected_table"]) > 0
         and len(st.session_state["selected_column"]) > 0
@@ -99,5 +102,9 @@ with results_col:
         st.write(f"Column: {column}")
         st.write(st.session_state[SessionKeys.COLUMN_TYPE])
         if st.button("Generate rules"):
-            with st.spinner("Processing..."):
-                st.write(generate_rules(table, column))
+            if cfg.langsmith_project_url:
+                st.markdown(f"[View execution on Langsmith]({cfg.langsmith_project_url})")
+            with st.spinner("Generating rules. Please wait ..."):
+                generated_rules = generate_rules(table, column)
+                logger.info("Generated rules: %s", generated_rules)
+                st.write(generated_rules)
