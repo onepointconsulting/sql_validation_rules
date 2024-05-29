@@ -66,7 +66,7 @@ def extract_sql_command(messages: list) -> str:
             try:
                 sql_command = SQLCommand.parse_raw(message.content)
                 acc += f"""
-## {sql_command.validation_type}
+### {sql_command.validation_type}
 
 ```sql
 {sql_command.validation_command}
