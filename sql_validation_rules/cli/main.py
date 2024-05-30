@@ -9,6 +9,7 @@ from sql_validation_rules.graph.graph_utils import (
     create_supervisor_message,
     invoke_column_rule,
     extract_sql_command,
+    convert_sql_command_to_str,
     generate_supervisor_config,
 )
 from sql_validation_rules.config.config import logger
@@ -68,12 +69,16 @@ def generate_rules(table: str, file: str, hide_steps: bool, count: int):
                         f.write("\n -------------------- \n")
                         f.write(f"{content}")
                     if VALIDATOR_MAIN_VALIDATOR in content:
-                        last_content += extract_sql_command(
-                            content[VALIDATOR_MAIN_VALIDATOR]["messages"]
+                        last_content += convert_sql_command_to_str(
+                            extract_sql_command(
+                                content[VALIDATOR_MAIN_VALIDATOR]["messages"]
+                            )
                         )
                     elif VALIDATOR_SQL_NUMERIC_VALIDATOR in content:
-                        last_content += extract_sql_command(
-                            content[VALIDATOR_SQL_NUMERIC_VALIDATOR]["messages"]
+                        last_content += convert_sql_command_to_str(
+                            extract_sql_command(
+                                content[VALIDATOR_SQL_NUMERIC_VALIDATOR]["messages"]
+                            )
                         )
                     f.flush()
 

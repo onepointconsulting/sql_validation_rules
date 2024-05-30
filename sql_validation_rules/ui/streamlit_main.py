@@ -6,6 +6,8 @@ from sql_validation_rules.config.log_factory import logger
 from sql_validation_rules.config.config import cfg
 from sql_validation_rules.ui.session_keys import init_session, SessionKeys
 from sql_validation_rules.ui.ui_funcs import generate_rules, retrieve_cols
+from sql_validation_rules.persistence.sql_rules import SQLRule
+from sql_validation_rules.persistence.crud import save_sql_rule
 
 # Define custom CSS for column width
 st.markdown(
@@ -44,7 +46,7 @@ def has_selected_table():
 def col_generator() -> Generator[str, None, None]:
     for col in st.session_state[SessionKeys.COLUMNS]:
         col_name: str = col["name"]
-        yield col_name
+        yield col_name, col["type"]
 
 
 with tab_column:
@@ -59,18 +61,15 @@ with tab_column:
     # Used to display the columns
     with field_col:
         st.header("Column")
-        for col_name in col_generator():
+        for col_name, col_type in col_generator():
             if st.button(f"{col_name}"):
                 st.session_state[SessionKeys.COLUMN] = col_name
-                st.session_state[SessionKeys.COLUMN_TYPE] = col["type"]
+                st.session_state[SessionKeys.COLUMN_TYPE] = col_type
 
     # Used to display the selected column
     with results_col:
         st.header("Generate Rules")
-        if (
-            has_selected_table()
-            and len(st.session_state["selected_column"]) > 0
-        ):
+        if has_selected_table() and len(st.session_state["selected_column"]) > 0:
             table = st.session_state[SessionKeys.TABLE]
             column = st.session_state[SessionKeys.COLUMN]
             st.write(f"Table: {table}")
@@ -102,9 +101,13 @@ with tab_table:
         if has_selected_table():
             table = st.session_state[SessionKeys.TABLE]
             st.write(f"Table: {table}")
-            if st.button(f"Generate rules for {len(st.session_state[SessionKeys.COLUMNS])} columns"):
-                for col_name in col_generator():
-                    with st.spinner(f"Generating rules for {col_name}. Please wait ..."):
+            if st.button(
+                f"Generate rules for {len(st.session_state[SessionKeys.COLUMNS])} columns"
+            ):
+                for col_name, _ in col_generator():
+                    with st.spinner(
+                        f"Generating rules for {col_name}. Please wait ..."
+                    ):
                         st.markdown(f"## {col_name}")
                         generated_rules = generate_rules(table, col_name)
                         st.write(generated_rules)

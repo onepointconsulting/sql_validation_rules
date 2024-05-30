@@ -61,21 +61,32 @@ def invoke_column_rule(table: str, column: str, config: dict):
 
 def extract_sql_command(messages: list) -> str:
     if len(messages) > 0 and len(messages[-1].content) > 0:
-        acc = ""
+        acc = []
         for message in messages[1:]:
             try:
                 sql_command = SQLCommand.parse_raw(message.content)
-                acc += f"""
+                acc.append(sql_command)
+            except Exception as e:
+                logger.warn("Could not extract sql command from {message.content}.")
+        return acc
+    return []
+
+
+def convert_sql_command_to_str(sql_commands: List[SQLCommand]) -> str:
+    acc = ""
+    for c in sql_commands:
+        acc += sql_command_to_str(c)
+    return acc
+
+
+def sql_command_to_str(sql_command: SQLCommand) -> str:
+    return f"""
 ### {sql_command.validation_type}
 
 ```sql
 {sql_command.validation_command}
 ```
 """
-            except Exception as e:
-                logger.warn("Could not extract sql command from {message.content}.")
-        return acc
-    return ""
 
 
 def generate_supervisor_config() -> dict:

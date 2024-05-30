@@ -75,6 +75,12 @@ python ./sql_validation_rules/cli/main.py generate-multiple-column-rules --table
 python ./sql_validation_rules/cli/main.py generate-multiple-column-rules --table call_center -c cc_city --count 3 -f call_center_cc_city.txt
 ```
 
+## Creating the database used to store the rules
+
+```bash
+python ./sql_validation_rules/persistence/sql_rules.py
+```
+
 ## Running the Streamlit app
 
 With the in-built Streamlit UI you can select a table and a column and then generate rules for it using the supervisor agent.

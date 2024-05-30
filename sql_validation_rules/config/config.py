@@ -19,6 +19,11 @@ class SnowflakeConfig:
     snowflake_host = os.getenv("SNOWFLAKE_HOST")
 
 
+class WriteDBConfig:
+    db_url = os.getenv("WRITE_DB_URL")
+    db_schema = os.getenv("WRITE_DB_SCHEMA")
+
+
 class LangfuseConfig:
     langfuse_tracing = os.getenv("LANGFUSE_TRACING") == "true"
     langfuse_public_key = os.getenv("LANGFUSE_PUBLIC_KEY")
@@ -40,6 +45,7 @@ class Config:
     recursion_limit = int(os.getenv("RECURSION_LIMIT", "20"))
     snowflake_config = SnowflakeConfig()
     langfuse_config = LangfuseConfig()
+    write_db_config = WriteDBConfig()
 
     langsmith_project_url = os.getenv("LANGSMITH_PROJECT_URL")
 
