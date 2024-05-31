@@ -14,6 +14,8 @@ If the field is a personal name, then it should not contain numbers. It should c
 If the field is a phone number, then the field should only contain characters allowed in phone numbers. The generated query will try to find those entries which are likely not phone numbers.
 If the field is a zip code, then the field should only contain a specific alpha numeric pattern. The generated query will try to find those entries which are likely not zip codes.
 If the field is a numeric, then the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for an personal age field you should have no negative mumbers). The generated query should return those which are not numbers in the desired range or empty entries or non numeric fields.
+If the field representa a year, please check if there are only numbers which represent plausible years, starting from 0 and ending at no more than 2500.
+If the field represents a month, please check if there are only numbers which represent plausible years, starting from 1 and ending at no more than 12.
 
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
@@ -61,5 +63,5 @@ Can you generate SQL validation query for numeric field for table {table} and fi
     human_message = """
 Please extract SQL validation rules for column {column} in table {table} as long as new ones can be found. 
 When you cannot find new ones stop. Make sure you find out details about the column before you choose which validator to take. 
-If the type of the field is decimal and is not a primary nor a foreign key you should use the statistical SQL validation.
+If the type of the field is decimal and is not a primary nor a foreign key nor part of a date (like e.g. a year) you should use the statistical SQL validation.
 """
