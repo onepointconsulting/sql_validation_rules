@@ -5,7 +5,6 @@ from langchain_community.tools.sql_database.tool import (
     InfoSQLDatabaseTool,
     ListSQLDatabaseTool,
     QuerySQLCheckerTool,
-    QuerySQLDataBaseTool,
 )
 from langchain.tools import BaseTool, tool
 from langchain_community.tools.sql_database.tool import ListSQLDatabaseTool
@@ -20,6 +19,7 @@ from sql_validation_rules.tools.numeric_stats_tool import (
 from sql_validation_rules.tools.table_column_info_tool import (
     TableColumnInfoDatabaseTool,
 )
+from sql_validation_rules.tools.query_sql_db_tool import ValidatorQuerySQLDataBaseTool
 from langchain_core.runnables.base import RunnableSequence
 
 db = sql_db_factory()
@@ -28,7 +28,7 @@ list_tables_tool: BaseTool = ListSQLDatabaseTool(db=db)
 
 info_tables_tool: BaseTool = InfoSQLDatabaseTool(db=db)
 
-query_sql: BaseTool = QuerySQLDataBaseTool(db=db)
+query_sql: BaseTool = ValidatorQuerySQLDataBaseTool(db=db)
 
 query_sql_checker: BaseTool = QuerySQLCheckerTool(db=db, llm=cfg.llm)
 
@@ -150,8 +150,10 @@ if __name__ == "__main__":
     # call_sql_query_checker(query)
     # call_sql_query_checker("select from call_center")
     # table_list = [t.strip() for t in table_list_str.split(",")]
-    call_sql_query_columns("customer")
-    # table_col = TableColumn(table="call_center", field="cc_tax_percentage")
+    # call_sql_query_columns("customer")
+    table_col = TableColumn(table="call_center", field="cc_tax_percentage")
     # call_sql_numeric_statistics(table_col)
     # call_table_column_info(table_col)
-    # call_table_column_info_as_runnable_sequence(table_col)
+    call_table_column_info_as_runnable_sequence(table_col)
+    call_table_column_info_as_runnable_sequence(TableColumn(table="call_center", field="cc_open_date_sk"))
+    call_table_column_info_as_runnable_sequence(TableColumn(table="call_center", field="cc_closed_date_sk"))

@@ -7,6 +7,7 @@ from langchain.callbacks.manager import (
     AsyncCallbackManagerForToolRun,
     CallbackManagerForToolRun,
 )
+from sqlalchemy import MetaData, Table
 from sqlalchemy.engine import Engine
 from sqlalchemy.engine import reflection
 from sql_validation_rules.tools.tools_model import TableColumn
@@ -34,6 +35,7 @@ class TableColumnInfoDatabaseTool(BaseSQLDatabaseTool, BaseTool):
             all_cols = inspector.get_columns(table)
             for col in all_cols:
                 if col["name"] == field.lower():
+                    col["is_foreign_key"] = is_foreign_key(table, field.lower(), engine)
                     return str(col)
             return "<Empty>"
         except Exception as e:
@@ -46,3 +48,14 @@ class TableColumnInfoDatabaseTool(BaseSQLDatabaseTool, BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         raise NotImplementedError("ListTablesSqlDbTool does not support async")
+    
+
+def is_foreign_key(table_name: str, field_name: str, engine: Engine):
+    metadata = MetaData()
+    table = Table(table_name, metadata, autoload_with=engine)
+    column = table.c.get(field_name)
+    if column is not None:
+        return any(column.foreign_keys)
+    return False
+
+

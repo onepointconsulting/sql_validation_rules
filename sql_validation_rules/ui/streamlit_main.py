@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, List
 import streamlit as st
 
 from sql_validation_rules.tools.sql_tools import sql_list_tables
@@ -6,8 +6,9 @@ from sql_validation_rules.config.log_factory import logger
 from sql_validation_rules.config.config import cfg
 from sql_validation_rules.ui.session_keys import init_session, SessionKeys
 from sql_validation_rules.ui.ui_funcs import generate_rules, retrieve_cols
-from sql_validation_rules.persistence.sql_rules import SQLRule
-from sql_validation_rules.persistence.crud import save_sql_rule
+from sql_validation_rules.graph.graph_utils import sql_command_to_str
+from sql_validation_rules.persistence.sql_to_pandas import execute_read_sql_as_df
+from sql_validation_rules.chain.sql_commands import SQLCommand
 
 # Define custom CSS for column width
 st.markdown(
@@ -49,6 +50,15 @@ def col_generator() -> Generator[str, None, None]:
         yield col_name, col["type"]
 
 
+def display_sql_commands(sql_commands: List[SQLCommand]):
+    for i, sql_command in enumerate(sql_commands):
+        st.write(sql_command_to_str(sql_command))
+        # Printing 10 results
+        st.write("#### Query result")
+        df = execute_read_sql_as_df(sql_command.validation_command, 10)
+        st.dataframe(df)
+
+
 with tab_column:
 
     # Create three columns
@@ -81,9 +91,8 @@ with tab_column:
                         f"[View execution on Langsmith]({cfg.langsmith_project_url})"
                     )
                 with st.spinner("Generating rules. Please wait ..."):
-                    generated_rules = generate_rules(table, column)
-                    logger.info("Generated rules: %s", generated_rules)
-                    st.write(generated_rules)
+                    sql_commands = generate_rules(table, column)
+                    display_sql_commands(sql_commands)
 
 
 with tab_table:
@@ -108,6 +117,9 @@ with tab_table:
                     with st.spinner(
                         f"Generating rules for {col_name}. Please wait ..."
                     ):
-                        st.markdown(f"## {col_name}")
-                        generated_rules = generate_rules(table, col_name)
-                        st.write(generated_rules)
+                        try:
+                            st.markdown(f"## {col_name}")
+                            sql_commands = generate_rules(table, col_name)
+                            display_sql_commands(sql_commands)
+                        except Exception as e:
+                            st.exception(e)

@@ -8,10 +8,10 @@ from sqlalchemy.engine.base import Engine
 from sql_validation_rules.config.config import cfg
 
 
-def sql_db_factory() -> SQLDatabase:
+def read_engine_factory() -> Engine:
     snowflake_config = cfg.snowflake_config
     schema = snowflake_config.snowflake_schema
-    engine = create_engine(
+    return create_engine(
         URL(
             account=snowflake_config.snowflake_account,
             user=snowflake_config.snowflake_user,
@@ -22,6 +22,12 @@ def sql_db_factory() -> SQLDatabase:
             host=snowflake_config.snowflake_host,
         )
     )
+
+
+def sql_db_factory() -> SQLDatabase:
+    snowflake_config = cfg.snowflake_config
+    schema = snowflake_config.snowflake_schema
+    engine = read_engine_factory()
     return SQLDatabase(engine=engine, schema=schema, lazy_table_reflection=True)
 
 

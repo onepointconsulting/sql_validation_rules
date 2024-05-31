@@ -59,14 +59,14 @@ def invoke_column_rule(table: str, column: str, config: dict):
     return res
 
 
-def extract_sql_command(messages: list) -> str:
+def extract_sql_command(messages: list) -> List[SQLCommand]:
     if len(messages) > 0 and len(messages[-1].content) > 0:
         acc = []
         for message in messages[1:]:
             try:
                 sql_command = SQLCommand.parse_raw(message.content)
                 acc.append(sql_command)
-            except Exception as e:
+            except Exception as _:
                 logger.warn("Could not extract sql command from {message.content}.")
         return acc
     return []

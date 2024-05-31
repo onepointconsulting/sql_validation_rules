@@ -1,14 +1,19 @@
+from sqlalchemy.orm import sessionmaker
+
 from sql_validation_rules.persistence.sql_rules import SQLRule
 from sql_validation_rules.db_connection_factory import sql_db_write_factory
-from sqlalchemy.orm import sessionmaker
+from sql_validation_rules.config.log_factory import logger
 
 
 def save_sql_rule(sql_rule: SQLRule):
-    engine, _ = sql_db_write_factory()
-    Session = sessionmaker(bind=engine)
-    with Session() as session:
-        session.add(sql_rule)
-        session.commit()
+    try:
+        engine, _ = sql_db_write_factory()
+        Session = sessionmaker(bind=engine)
+        with Session() as session:
+            session.add(sql_rule)
+            session.commit()
+    except Exception as e:
+        logger.exception("Cannot insert record in database")
 
 
 if __name__ == "__main__":

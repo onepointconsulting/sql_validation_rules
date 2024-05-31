@@ -9,16 +9,16 @@ Given the following user request either call a worker or if you are finished, re
     human_message = """Given an input query create syntactically correct Snowflake SQL query which validate the data, then look at the results of the query and return the query.
 
 Remember: a SQL validation query checks whether the data in a field is valid and looks for anomalies.
-If the field is an email you need to generate SQL which checks whether the content of the field is an email.
-If the field is a personal name, then it should not contain numbers. It should contain only alpha numeric characters with spaces and little punctuation.
-If the field is a phone number, then the field should only contain characters allowed in phone numbers.
-If the field is a zip code, then the field should only contain a specific alpha numeric pattern.
-If the field is a numeric, then the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for an personal age field you should have no negative mumbers).
+If the field is an email you need to generate SQL which checks whether the content of the field is not an email.
+If the field is a personal name, then it should not contain numbers. It should contain only alpha numeric characters with spaces and little punctuation. The query you generate looks for those entries which you cannot validate and are likely not to be personal names.
+If the field is a phone number, then the field should only contain characters allowed in phone numbers. The generated query will try to find those entries which are likely not phone numbers.
+If the field is a zip code, then the field should only contain a specific alpha numeric pattern. The generated query will try to find those entries which are likely not zip codes.
+If the field is a numeric, then the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for an personal age field you should have no negative mumbers). The generated query should return those which are not numbers in the desired range or empty entries or non numeric fields.
 
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
 Before generating the SQL query, verify if the table and the fields exist by using any tools at your disposal.
-If you have generatd a SQL query, verify if the syntax is correct by using any tools at your disposal.
+If you have generated a SQL query, verify if the syntax is correct by using any tools at your disposal.
 
 If you execute SQL queries limit them to a maximum of 1000 rows.
 DO NOT run any DML statements (INSERT, UPDATE, DELETE, DROP, etc.) against the database.
@@ -61,5 +61,5 @@ Can you generate SQL validation query for numeric field for table {table} and fi
     human_message = """
 Please extract SQL validation rules for column {column} in table {table} as long as new ones can be found. 
 When you cannot find new ones stop. Make sure you find out details about the column before you choose which validator to take. 
-If the type of the field is decimal and is not a primary or a foreign key you should use the statistical SQL validation.
+If the type of the field is decimal and is not a primary nor a foreign key you should use the statistical SQL validation.
 """

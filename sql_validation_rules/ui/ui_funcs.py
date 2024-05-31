@@ -1,3 +1,5 @@
+from typing import List
+
 import json
 import streamlit as st
 
@@ -5,10 +7,10 @@ from sql_validation_rules.tools.sql_tools import sql_query_columns
 from sql_validation_rules.graph.graph_utils import (
     invoke_column_rule,
     extract_sql_command,
-    convert_sql_command_to_str,
 )
 from sql_validation_rules.graph.graph_utils import generate_supervisor_config
 from sql_validation_rules.persistence.sql_rules import SQLRule
+from sql_validation_rules.chain.sql_commands import SQLCommand
 from sql_validation_rules.persistence.crud import save_sql_rule
 
 config = generate_supervisor_config()
@@ -25,11 +27,11 @@ def save_rule(table: str, column: str, sql: str, rule_title: str):
     save_sql_rule(sql_rule)
 
 
-def generate_rules(table: str, column: str) -> str:
+def generate_rules(table: str, column: str) -> List[SQLCommand]:
     res = invoke_column_rule(table, column, config)
     sql_commands = extract_sql_command(res["messages"])
     for sql_command in sql_commands:
         save_rule(
             table, column, sql_command.validation_command, sql_command.validation_type
         )
-    return convert_sql_command_to_str(sql_commands)
+    return sql_commands

@@ -1,0 +1,24 @@
+docker run --name langfuse ^
+-e DATABASE_URL="postgresql://postgres:Sarovar16108!@host.docker.internal:5432/langfuse" ^
+-e NEXTAUTH_URL=http://localhost:3333 ^
+-e NEXTAUTH_SECRET=veryverysecret ^
+-e SALT=likesalty ^
+-p 3333:3000 ^
+-a STDOUT ^
+langfuse/langfuse:2
+
+docker run --name kuzzle-admin -p 1080:3000 gpulidodt/kuzzle-admin-console
+
+docker run --name postgres_container -e POSTGRES_PASSWORD=Sarovar16108!! -d -p 5431:5432 -v postgres_data:/var/lib/postgresql/data postgres
+
+"C:\Program Files\PostgreSQL\16\bin\psql.exe" postgresql://192.168.210.112:5432/langfuse?user=postgres^&password=Sarovar16108!
+
+"C:\Program Files\PostgreSQL\16\bin\psql.exe" "postgresql://0.0.0.0:5431/langfuse?user=postgres&password=Sarovar16108!"
+
+postgresql://host.docker.internal:5431/langfuse?user=postgres^&password=Sarovar16108!!
+
+CREATE DATABASE langfuse WITH OWNER = postgres ENCODING = 'UTF8' LOCALE_PROVIDER = 'libc' CONNECTION LIMIT = -1 IS_TEMPLATE = False;
+
+sk-lf-a5003b90-8f03-4a71-9c4e-5068a561e3b1
+pk-lf-10753007-e946-4437-8cb0-fae176540b3f
+http://localhost:3333
