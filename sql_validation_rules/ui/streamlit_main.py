@@ -91,8 +91,11 @@ with tab_column:
                         f"[View execution on Langsmith]({cfg.langsmith_project_url})"
                     )
                 with st.spinner("Generating rules. Please wait ..."):
-                    sql_commands = generate_rules(table, column)
-                    display_sql_commands(sql_commands)
+                    try:
+                        sql_commands = generate_rules(table, column)
+                        display_sql_commands(sql_commands)
+                    except Exception as e:
+                        st.exception(e)
 
 
 with tab_table:
