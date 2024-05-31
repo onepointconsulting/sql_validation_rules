@@ -3,7 +3,6 @@ from typing import List
 from sql_validation_rules.test.provider.supervisor_prompt_provider import (
     create_until_no_more_meaningful,
     create_until_repeat_cc_tax_percentage,
-    create_until_repeat_cc_tax_percentage_no_type,
 )
 from sql_validation_rules.config.log_factory import logger
 from sql_validation_rules.config.config import cfg
@@ -25,7 +24,7 @@ if __name__ == "__main__":
     print("app created")
 
     config = {
-        "recursion_limit": 20,
+        "recursion_limit": cfg.recursion_limit,
         "callbacks": [langfuse_handler] if cfg.langfuse_config.langfuse_tracing else [],
     }
 
