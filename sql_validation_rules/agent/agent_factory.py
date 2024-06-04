@@ -9,6 +9,7 @@ from sql_validation_rules.tools.sql_tools import (
     sql_query_checker,
     sql_info_tables,
     numeric_stats_tool,
+    create_table_info_runnable_sequence
 )
 from langchain_core.tools import BaseTool
 from langchain_core.prompts import ChatPromptTemplate

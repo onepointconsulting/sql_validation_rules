@@ -9,6 +9,7 @@ from langchain_core.callbacks import (
     CallbackManagerForToolRun,
 )
 from sql_validation_rules.persistence.db_connection_factory import sql_db_factory
+from sql_validation_rules.config.log_factory import logger
 
 LIMIT = 1000
 
@@ -40,12 +41,18 @@ class ValidatorQuerySQLDataBaseTool(BaseSQLDatabaseTool, BaseTool):
         # Make sure that the tool is limited to a specific amount of rows, otherwise we might get in trouble.
         query = append_limit(query)
         cursor = self.db.run_no_throw(query, fetch="cursor")
+        if type(cursor) == 'str':
+            return cursor
         res = []
-        for i, x in enumerate(cursor.fetchmany(LIMIT)):
-            res.append(x._asdict())
-            if i == LIMIT:
-                break
-        return str(res)
+        try:
+            for i, x in enumerate(cursor.fetchmany(LIMIT)):
+                res.append(x._asdict())
+                if i == LIMIT:
+                    break
+            return str(res)
+        except Exception as e:
+            logger.exception(f"Cannot process '{query}'")
+            return str(e)
 
 
 def append_limit(query: str) -> str:

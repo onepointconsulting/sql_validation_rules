@@ -14,12 +14,13 @@ If the field is a personal name, then it should not contain numbers. It should c
 If the field is a phone number, then the field should only contain characters allowed in phone numbers. The generated query will try to find those entries which are likely not phone numbers.
 If the field is a zip code, then the field should only contain a specific alpha numeric pattern. The generated query will try to find those entries which are likely not zip codes.
 If the field is a numeric, then the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for an personal age field you should have no negative mumbers). The generated query should return those which are not numbers in the desired range or empty entries or non numeric fields.
-If the field representa a year, please check if there are only numbers which represent plausible years, starting from 0 and ending at no more than 2500.
-If the field represents a month, please check if there are only numbers which represent plausible years, starting from 1 and ending at no more than 12.
+If the field representa a year and is not a foreign key, please check if there are only numbers which represent plausible years, starting from 0 and ending at no more than 2500.
+If the field represents a month and is not a foreign key, please check if there are only numbers which represent plausible months, starting from 1 and ending at no more than 12.
+If the field is a foreign key, just check if the field contains null or negative numbers for now.
 
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
-Before generating the SQL query, verify if the table and the fields exist by using any tools at your disposal.
+Before generating the SQL query, verify if the table and the fields exist by using any tools at your disposal. Look at the constraints to check if a field is a foreign key or not.
 If you have generated a SQL query, verify if the syntax is correct by using any tools at your disposal.
 
 If you execute SQL queries limit them to a maximum of 1000 rows.
