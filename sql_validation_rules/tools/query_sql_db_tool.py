@@ -8,8 +8,11 @@ from langchain_core.pydantic_v1 import BaseModel, Field
 from langchain_core.callbacks import (
     CallbackManagerForToolRun,
 )
+from sql_validation_rules.persistence.db_connection_factory import sql_db_factory
 
-LIMIT_EXPRESSION = " limit 1000;"
+LIMIT = 1000
+
+LIMIT_EXPRESSION = f" limit {LIMIT};"
 
 
 class _QuerySQLDataBaseToolInput(BaseModel):
@@ -24,6 +27,7 @@ class ValidatorQuerySQLDataBaseTool(BaseSQLDatabaseTool, BaseTool):
     Execute a SQL query against the database and get back the result..
     If the query is not correct, an error message will be returned.
     If an error is returned, rewrite the query, check the query, and try again.
+    This method ensures that not more than 1000 results are retrieved.
     """
     args_schema: Type[BaseModel] = _QuerySQLDataBaseToolInput
 
@@ -35,7 +39,13 @@ class ValidatorQuerySQLDataBaseTool(BaseSQLDatabaseTool, BaseTool):
         """Execute the query, return the results or an error message."""
         # Make sure that the tool is limited to a specific amount of rows, otherwise we might get in trouble.
         query = append_limit(query)
-        return self.db.run_no_throw(query)
+        cursor = self.db.run_no_throw(query, fetch="cursor")
+        res = []
+        for i, x in enumerate(cursor.fetchmany(LIMIT)):
+            res.append(x._asdict())
+            if i == LIMIT:
+                break
+        return str(res)
 
 
 def append_limit(query: str) -> str:
@@ -56,3 +66,8 @@ if __name__ == "__main__":
     query = append_limit(query)
     assert "LIMIT 100" in query, query
     print(query)
+
+    db = sql_db_factory()
+    query_sql: BaseTool = ValidatorQuerySQLDataBaseTool(db=db)
+    res = query_sql(tool_input="SELECT c_birth_month FROM customer")
+    print(res)

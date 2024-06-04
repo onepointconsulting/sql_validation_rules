@@ -1,6 +1,6 @@
 import pandas as pd
 
-from sql_validation_rules.db_connection_factory import read_engine_factory
+from sql_validation_rules.persistence.db_connection_factory import read_engine_factory
 
 
 def execute_read_sql_as_df(query: str, limit: int = 100) -> pd.DataFrame:

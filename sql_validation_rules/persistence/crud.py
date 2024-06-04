@@ -1,7 +1,7 @@
 from sqlalchemy.orm import sessionmaker
 
 from sql_validation_rules.persistence.sql_rules import SQLRule
-from sql_validation_rules.db_connection_factory import sql_db_write_factory
+from sql_validation_rules.persistence.db_connection_factory import sql_db_write_factory
 from sql_validation_rules.config.log_factory import logger
 
 

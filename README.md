@@ -62,7 +62,7 @@ python .\sql_validation_rules\cli\main.py generate-rules -t call_center -f call_
 Generate validation rule for a specific column in a table excluding some rule types:
 
 ```bash
-python ./sql_validation_rules/cli/main.py generate-column-rule --table call_center -c cc_call_center_sk -e "Data Type Validation, Validation SQL"
+python ./sql_validation_rules/cli/main.py generate-column-rule --table call_center -c cc_call_center_sk
 ```
 
 Generate multiple rules for one single table column:

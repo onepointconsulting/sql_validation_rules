@@ -24,7 +24,7 @@ class SQLRule(Base):
 
 
 if __name__ == "__main__":
-    from sql_validation_rules.db_connection_factory import sql_db_write_factory
+    from sql_validation_rules.persistence.db_connection_factory import sql_db_write_factory
 
     engine, _ = sql_db_write_factory()
 

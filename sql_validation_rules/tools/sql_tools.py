@@ -1,5 +1,5 @@
 import sys
-from sql_validation_rules.db_connection_factory import sql_db_factory
+from sql_validation_rules.persistence.db_connection_factory import sql_db_factory
 
 from langchain_community.tools.sql_database.tool import (
     InfoSQLDatabaseTool,
@@ -152,8 +152,8 @@ if __name__ == "__main__":
     # table_list = [t.strip() for t in table_list_str.split(",")]
     # call_sql_query_columns("customer")
     table_col = TableColumn(table="call_center", field="cc_tax_percentage")
-    # call_sql_numeric_statistics(table_col)
+    call_sql_numeric_statistics(table_col)
     # call_table_column_info(table_col)
-    call_table_column_info_as_runnable_sequence(table_col)
-    call_table_column_info_as_runnable_sequence(TableColumn(table="call_center", field="cc_open_date_sk"))
-    call_table_column_info_as_runnable_sequence(TableColumn(table="call_center", field="cc_closed_date_sk"))
+    # call_table_column_info_as_runnable_sequence(table_col)
+    # call_table_column_info_as_runnable_sequence(TableColumn(table="call_center", field="cc_open_date_sk"))
+    # call_table_column_info_as_runnable_sequence(TableColumn(table="call_center", field="cc_closed_date_sk"))

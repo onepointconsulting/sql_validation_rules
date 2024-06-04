@@ -31,7 +31,7 @@ class NumericStatsSQLDatabaseTool(BaseSQLDatabaseTool, BaseTool):
         try:
             # TODO: Include other statistical queries.
             result: List[List[Any]] = self.db._execute(
-                f"select min({field}), avg({field}), max({field}), stddev({field}) from {table}"
+                f"select min({field}), avg({field}), max({field}), stddev({field}), mode({field}), median({field}) from {table}"
             )
             for row in result:
                 return json.dumps({k: float(v) for k, v in row.items()})

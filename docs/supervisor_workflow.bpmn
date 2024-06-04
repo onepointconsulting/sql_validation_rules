@@ -37,11 +37,11 @@
     </bpmn:serviceTask>
     <bpmn:sequenceFlow id="Flow_1alt8xo" sourceRef="Gateway_1bj77id" targetRef="Activity_1r5i7q2" />
     <bpmn:sequenceFlow id="Flow_069zn2w" sourceRef="Gateway_1bj77id" targetRef="Activity_150kv83" />
-    <bpmn:serviceTask id="Activity_1r5i7q2" name="Statistical validation agent">
+    <bpmn:serviceTask id="Activity_1r5i7q2" name="Numeric SQL Validator Agent">
       <bpmn:incoming>Flow_1alt8xo</bpmn:incoming>
       <bpmn:outgoing>Flow_1feyan9</bpmn:outgoing>
     </bpmn:serviceTask>
-    <bpmn:serviceTask id="Activity_150kv83" name="Regular validation agent">
+    <bpmn:serviceTask id="Activity_150kv83" name="Regular SQL Validator Agent">
       <bpmn:incoming>Flow_069zn2w</bpmn:incoming>
       <bpmn:outgoing>Flow_1iln5tn</bpmn:outgoing>
     </bpmn:serviceTask>
@@ -118,9 +118,11 @@
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_0akngvf_di" bpmnElement="Activity_1r5i7q2">
         <dc:Bounds x="730" y="313" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Activity_11u27ol_di" bpmnElement="Activity_150kv83">
         <dc:Bounds x="730" y="423" width="100" height="80" />
+        <bpmndi:BPMNLabel />
       </bpmndi:BPMNShape>
       <bpmndi:BPMNShape id="Gateway_1mo4r67_di" bpmnElement="Gateway_1mo4r67" isMarkerVisible="true">
         <dc:Bounds x="895" y="328" width="50" height="50" />
