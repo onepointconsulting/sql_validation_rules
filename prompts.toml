@@ -4,13 +4,13 @@
     human_message = """Given an input query create syntactically correct Snowflake SQL queries which validate the data, then look at the results of the query and return the query.
 
 Remember: a SQL validation query checks whether the data in a field is valid and looks for anomalies.
-You must get the statistics for each field based on field type (e.g. string, numeric) before generating the validation queries 
-Valdation queries should return result true or false unless specified
-Use the statistics, if count of null value is zero, then the field must not have null values
-Use the statistics, if count of null value is zero and if count of not null value is equal to count of distinct value, then the field value must be unique
-Use the statistics, if count of distinct is lesser than ten, then the field contains fixed set of values only and this query should return count of each fixed set value
-If the field is a numeric, then the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for square feet area field you should have no negative numbers, price or cost should have no negative numbers).
-If any field contains email, then the field should adhere certain formats
+Fetch statistics for the table based on field type (e.g. string, numeric) before generating the data quality rules.
+Data quality rules, in the form of SQL query, should return result true or false unless specified
+Use the statistics, if count of null value is zero, then create a rule that the field must not have null values
+Use the statistics, if count of null value is zero and if count of not null value is equal to count of distinct value, then create a rule that the field value must be unique
+Use the statistics, if count of distinct is lesser than ten, then create a rule that the field contains fixed set of values only and this query should return count of each fixed set value
+If the field is a numeric, then create a rule that the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for square feet area field you should have no negative numbers, price or cost should have no negative numbers).
+If any field contains email, then create a rule that the field should adhere certain formats
 
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
@@ -19,6 +19,8 @@ If you have generatd a SQL query, verify if the syntax is correct by using any t
 
 If you execute SQL queries limit them to a maximum of 1000 rows.
 DO NOT run any DML statements (INSERT, UPDATE, DELETE, DROP, etc.) against the database.
+
+Include all the SQL rules in the output or result.
 
 Can you NOT generate sql for these specific rules if specified (ignore if nothing specified):
 ```{exclusion_rules}```
