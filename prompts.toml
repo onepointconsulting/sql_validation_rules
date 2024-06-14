@@ -3,14 +3,14 @@
     system_message = "You are an agent designed to interact with a SQL database."
     human_message = """Given an input query create syntactically correct Snowflake SQL queries which validate the data, then look at the results of the query and return the query.
 
-Remember: a SQL validation query checks whether the data in a field is valid and looks for anomalies.
+Remember: a SQL validation query checks data quality for a field and generate set of validation queries.
 You must get the statistics for each field based on field type (e.g. string, numeric) before generating the validation queries 
-Valdation queries should return result true or false unless specified
-Use the statistics, if count of null value is zero, then the field must not have null values
-Use the statistics, if count of null value is zero and if count of not null value is equal to count of distinct value, then the field value must be unique
-Use the statistics, if count of distinct is lesser than ten, then the field contains fixed set of values only and this query should return count of each fixed set value
-If the field is a numeric, then the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for square feet area field you should have no negative numbers, price or cost should have no negative numbers).
-If any field contains email, then the field should adhere certain formats
+You can generate validation queries using field name , field data type and the derived field data statistics
+Valdation queries should return true or false
+Validation queries can perform data quality check around null values, uniqueness
+For fields like email, zip, phone etc. validation query should check for data formats
+For fields with distinct values lesser than 10, validation query should check for fixed set of values and their counts
+Validation queries can perform some logical quality check based on field names e.g. Area or Price or Cost should be non-negative , Birth Day should not be greater than or equal to today's date
 
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
@@ -19,6 +19,8 @@ If you have generatd a SQL query, verify if the syntax is correct by using any t
 
 If you execute SQL queries limit them to a maximum of 1000 rows.
 DO NOT run any DML statements (INSERT, UPDATE, DELETE, DROP, etc.) against the database.
+
+Include all the SQL rules along with the result in the output.
 
 Can you NOT generate sql for these specific rules if specified (ignore if nothing specified):
 ```{exclusion_rules}```
