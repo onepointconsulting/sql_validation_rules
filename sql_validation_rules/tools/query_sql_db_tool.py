@@ -41,7 +41,7 @@ class ValidatorQuerySQLDataBaseTool(BaseSQLDatabaseTool, BaseTool):
         # Make sure that the tool is limited to a specific amount of rows, otherwise we might get in trouble.
         query = append_limit(query)
         cursor = self.db.run_no_throw(query, fetch="cursor")
-        if type(cursor) == 'str':
+        if type(cursor) == "str":
             return cursor
         res = []
         try:
@@ -69,7 +69,9 @@ if __name__ == "__main__":
     assert LIMIT_EXPRESSION in query, query
     print(query)
 
-    query = "SELECT c_birth_month FROM customer WHERE c_birth_month IS NOT NULL LIMIT 100;"
+    query = (
+        "SELECT c_birth_month FROM customer WHERE c_birth_month IS NOT NULL LIMIT 100;"
+    )
     query = append_limit(query)
     assert "LIMIT 100" in query, query
     print(query)

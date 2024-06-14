@@ -6,31 +6,33 @@ Given the following user request either call a worker or if you are finished, re
     human_message = """Given a table {table} and a column {field} """
     [sql_validation.main]
     system_message = "You are an agent designed to interact with a SQL database."
-    human_message = """Given an input query create syntactically correct Snowflake SQL query which validates the data, then look at the results of the query and return the query.
+    human_message = """Given an input query create syntactically correct SQL queries which validate the data, then look at the results of the query and return the query.
 
-Remember: a SQL validation query checks whether the data in a field is valid and looks for anomalies.
-If the field is an email you need to generate SQL which checks whether the content of the field is not an email.
-If the field is a personal name, then it should not contain numbers. It should contain only alpha numeric characters with spaces and little punctuation. The query you generate looks for those entries which you cannot validate and are likely not to be personal names.
-If the field is a phone number, then the field should only contain characters allowed in phone numbers. The generated query will try to find those entries which are likely not phone numbers.
-If the field is a zip code, then the field should only contain a specific alpha numeric pattern. The generated query will try to find those entries which are likely not zip codes.
-If the field is a numeric, then the field should only contain numbers in a specific range that matches the purpose of the field (like e.g. for an personal age field you should have no negative mumbers). The generated query should return those which are not numbers in the desired range or empty entries or non numeric fields.
-If the field representa a year and is not a foreign key, please check if there are only numbers which represent plausible years, starting from 0 and ending at no more than 2500.
-If the field represents a month and is not a foreign key, please check if there are only numbers which represent plausible months, starting from 1 and ending at no more than 12.
-If the field is a foreign key, just check if the field contains null or negative numbers for now.
+Remember: a SQL validation query checks data quality for a field and generate set of validation queries.
+You must get the statistics for each field based on field type (e.g. string, numeric) before generating the validation queries 
+You can generate validation queries using field name , field data type and the derived field data statistics
+
+Validation queries should return true or false. Return only those queries which passed validation by being executed and returning true.
+
+Validation queries can perform data quality check around null values, uniqueness
+For fields like email, zip, phone etc. validation query should check for data formats
+For fields with distinct values lesser than 10, validation query should check for fixed set of values and their counts
+Validation queries can perform some logical quality check based on field names e.g. Area or Price or Cost should be non-negative , Birth Day should not be greater than or equal to today's date
 
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
-Before generating the SQL query, verify if the table and the fields exist by using any tools at your disposal. Look at the constraints to check if a field is a foreign key or not.
-If you have generated a SQL query, verify if the syntax is correct by using any tools at your disposal.
+Before generating the SQL query, verify if the table and the fields exist by using any tools at your disposal.
+If you have generatd a SQL query, verify if the syntax is correct by using any tools at your disposal.
 
 If you execute SQL queries limit them to a maximum of 1000 rows.
 DO NOT run any DML statements (INSERT, UPDATE, DELETE, DROP, etc.) against the database.
 
+Include all the SQL rules along with the result in the output.
+
 This is the history of previously generated validation SQL queries which you should not re-generate:
 ```{validation_sql_history}```
 
-Can you generate SQL validation query for table {table} and field {field}?
-"""
+Can you generate SQL validation queries for table {table} and field {field}?"""
 
     [sql_validation.numeric_field]
     system_message = "You are an agent designed to interact with a SQL database specialized on numeric fields."
@@ -64,5 +66,6 @@ Can you generate SQL validation query for numeric field for table {table} and fi
     human_message = """
 Please extract SQL validation rules for column {column} in table {table} as long as new ones can be found. 
 When you cannot find new ones stop. Make sure you find out details about the column before you choose which validator to take. 
-If the type of the field is decimal and is not a primary nor a foreign key nor part of a date (like e.g. a year) you should use the SQL_Numeric_Statistical_Validator.
+If the type of the field is decimal and a floating point number and is not a primary nor a foreign key nor part of a date (like e.g. a year, month, day of week) you should use the SQL_Numeric_Statistical_Validator.
+If the field is somehow related date then use the SQL_Validator to generate the SQL validation rules.
 """

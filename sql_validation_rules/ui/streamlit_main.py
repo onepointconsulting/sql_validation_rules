@@ -2,7 +2,6 @@ from typing import Generator, List
 import streamlit as st
 
 from sql_validation_rules.tools.sql_tools import sql_list_tables
-from sql_validation_rules.config.log_factory import logger
 from sql_validation_rules.config.config import cfg
 from sql_validation_rules.ui.session_keys import init_session, SessionKeys
 from sql_validation_rules.ui.ui_funcs import generate_rules, retrieve_cols

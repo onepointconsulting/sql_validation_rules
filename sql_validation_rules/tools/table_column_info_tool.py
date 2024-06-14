@@ -48,7 +48,7 @@ class TableColumnInfoDatabaseTool(BaseSQLDatabaseTool, BaseTool):
         run_manager: Optional[AsyncCallbackManagerForToolRun] = None,
     ) -> str:
         raise NotImplementedError("ListTablesSqlDbTool does not support async")
-    
+
 
 def is_foreign_key(table_name: str, field_name: str, engine: Engine):
     metadata = MetaData()
@@ -57,5 +57,3 @@ def is_foreign_key(table_name: str, field_name: str, engine: Engine):
     if column is not None:
         return any(column.foreign_keys)
     return False
-
-

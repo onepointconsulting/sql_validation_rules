@@ -21,6 +21,8 @@ from sql_validation_rules.tools.table_column_info_tool import (
 )
 from sql_validation_rules.tools.query_sql_db_tool import ValidatorQuerySQLDataBaseTool
 from langchain_core.runnables.base import RunnableSequence
+from sql_validation_rules.tools.sql_numeric_stats_tool import NumericColumnStatsSQLDatabaseTool
+from sql_validation_rules.tools.sql_stats_string import CalcStatsForStringCols
 
 db = sql_db_factory()
 
@@ -41,6 +43,9 @@ numeric_stats_tool: BaseTool = NumericStatsSQLDatabaseTool(
 table_column_info_tool: BaseTool = TableColumnInfoDatabaseTool(
     db=db, args_schema=TableColumn
 )
+
+query_numeric_columns_stats: BaseTool = NumericColumnStatsSQLDatabaseTool(db=db)
+query_string_columns_stats: BaseTool = CalcStatsForStringCols(db=db)
 
 # Simplistic cache for the SQL list tables.
 sys.list_tables_cache = ""
@@ -78,6 +83,18 @@ def sql_query_checker(sql: str) -> str:
 def sql_query_columns(table_name: str) -> str:
     """Gets columns of a table as a JSON array"""
     return query_columns_tool(table_name)
+
+
+@tool("calc_string_column_stats", return_direct=True)
+def calc_string_column_stats(table_name: str) -> str:
+    """Gets column statistics of string fields of a table as a JSON object"""
+    return query_string_columns_stats(table_name)
+
+
+@tool("calc_numeric_column_stats", return_direct=True)
+def calc_numeric_column_stats(table_name: str) -> str:
+    """Gets column statistics of numeric fields of a table as a JSON object"""
+    return query_numeric_columns_stats(table_name)
 
 
 def create_table_info_runnable_sequence() -> RunnableSequence:
@@ -144,16 +161,20 @@ if __name__ == "__main__":
 
     table_list_str = call_list_tables()
     assert numeric_stats_tool.args_schema is not None
-    # call_sql_info_tables(table_list_str)
-    # query = "select count(*) from call_center"
-    # call_sql_query(query)
-    # call_sql_query_checker(query)
-    # call_sql_query_checker("select from call_center")
-    # table_list = [t.strip() for t in table_list_str.split(",")]
-    # call_sql_query_columns("customer")
+    call_sql_info_tables(table_list_str)
+    query = "select count(*) from call_center"
+    call_sql_query(query)
+    call_sql_query_checker(query)
+    call_sql_query_checker("select from call_center")
+    table_list = [t.strip() for t in table_list_str.split(",")]
+    call_sql_query_columns("customer")
     table_col = TableColumn(table="call_center", field="cc_tax_percentage")
     call_sql_numeric_statistics(table_col)
-    # call_table_column_info(table_col)
-    # call_table_column_info_as_runnable_sequence(table_col)
-    # call_table_column_info_as_runnable_sequence(TableColumn(table="call_center", field="cc_open_date_sk"))
-    # call_table_column_info_as_runnable_sequence(TableColumn(table="call_center", field="cc_closed_date_sk"))
+    call_table_column_info(table_col)
+    call_table_column_info_as_runnable_sequence(table_col)
+    call_table_column_info_as_runnable_sequence(
+        TableColumn(table="call_center", field="cc_open_date_sk")
+    )
+    call_table_column_info_as_runnable_sequence(
+        TableColumn(table="call_center", field="cc_closed_date_sk")
+    )
