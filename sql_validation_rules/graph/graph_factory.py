@@ -26,6 +26,7 @@ EXTRACTION_CONTENT = "extraction_content"
 
 def create_tool_executor():
     return ToolExecutor(
+        #[sql_list_tables, sql_info_tables, sql_query, sql_query_checker]
         [sql_list_tables, sql_info_tables, sql_query, sql_query_checker, calc_string_column_stats, calc_numeric_column_stats]
     )
 
