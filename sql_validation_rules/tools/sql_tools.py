@@ -48,23 +48,28 @@ query_numeric_columns_stats: BaseTool = NumericColumnStatsSQLDatabaseTool(db=db)
 query_string_columns_stats: BaseTool = CalcStatsForStringCols(db=db)
 
 # Simplistic cache for the SQL list tables.
-sys.list_tables_cache = ""
-
+list_tables_cache = ""
 
 # Note that the input string is ignored here but cannot be removed.
 @tool("list_tables", return_direct=True)
 def sql_list_tables(input: str) -> str:
     """Returns all tables in the current database."""
-    if len(sys.list_tables_cache) > 0:
-        return sys.list_tables_cache
+    global list_tables_cache
+    if len(list_tables_cache) > 0:
+        return list_tables_cache
     sys.list_tables_cache = list_tables_tool(tool_input="")
     return sys.list_tables_cache
 
+sql_info_tables_cache = {}
 
 @tool("info_tables", return_direct=True)
 def sql_info_tables(table_list_str: str) -> str:
     """Returns information about a list of tables."""
-    return info_tables_tool(tool_input=table_list_str)
+    global sql_info_tables_cache
+    if table_list_str in sql_info_tables_cache:
+        return sql_info_tables_cache[table_list_str]
+    res = info_tables_tool(tool_input=table_list_str)
+    sql_info_tables_cache[table_list_str] = res
 
 
 @tool("sql_db_query", return_direct=True)

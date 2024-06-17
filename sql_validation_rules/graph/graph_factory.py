@@ -76,7 +76,9 @@ def run_extraction(data):
         try:
             outcome = extraction_chain.invoke(output)
             sql_commands: SQLCommands = outcome["function"]
-            return {EXTRACTION_CONTENT: sql_commands.validation_commands}
+            res = {EXTRACTION_CONTENT: sql_commands.validation_commands}
+            logger.info("run_extraction result: %s", res)
+            return res
         except Exception as e:
             logger.exception("Could not extract SQL with LLM")
             captured = extract_sql_markdown(output)

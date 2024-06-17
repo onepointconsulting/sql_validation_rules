@@ -22,7 +22,6 @@ Validation queries can perform some logical quality check based on field names e
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
 Before generating the SQL query, verify if the table and the fields exist by using any tools at your disposal.
-If the field type is string please use the tool to get column statistics as a JSON object.
 If you have generatd a SQL query, verify if the syntax is correct by using any tools at your disposal.
 
 If you execute SQL queries limit them to a maximum of 1000 rows.
