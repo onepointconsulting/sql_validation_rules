@@ -12,6 +12,8 @@ from sql_validation_rules.tools.sql_tools import (
     sql_query,
     sql_query_checker,
     numeric_stats_tool,
+    calc_string_column_stats,
+    calc_numeric_column_stats
 )
 from sql_validation_rules.agent.agent_factory import (
     agent_runnable,
@@ -42,6 +44,8 @@ def create_tool_executor():
             sql_query,
             sql_query_checker,
             numeric_stats_tool,
+            # calc_string_column_stats,
+            # calc_numeric_column_stats
         ]
     )
 

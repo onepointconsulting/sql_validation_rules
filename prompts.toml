@@ -22,6 +22,7 @@ Validation queries can perform some logical quality check based on field names e
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
 Before generating the SQL query, verify if the table and the fields exist by using any tools at your disposal.
+If the field type is string please use the tool to get column statistics as a JSON object.
 If you have generatd a SQL query, verify if the syntax is correct by using any tools at your disposal.
 
 If you execute SQL queries limit them to a maximum of 1000 rows.
@@ -44,7 +45,7 @@ You can try to find outliers which are more than 2.5 standard deviations away fr
 You must double check your query before executing it. If you get an error while executing a query, rewrite the query and try it again.
 
 Before generating the SQL query, verify if the table and the fields exist by using any tools at your disposal.
-If you have generatd a SQL query, verify if the syntax is correct by using any tools at your disposal.
+If you have generated a SQL query, verify if the syntax is correct by using any tools at your disposal.
 
 If you execute SQL queries limit them to a maximum of 1000 rows.
 DO NOT run any DML statements (INSERT, UPDATE, DELETE, DROP, etc.) against the database.
@@ -67,5 +68,5 @@ Can you generate SQL validation query for numeric field for table {table} and fi
 Please extract SQL validation rules for column {column} in table {table} as long as new ones can be found. 
 When you cannot find new ones stop. Make sure you find out details about the column before you choose which validator to take. 
 If the type of the field is decimal and a floating point number and is not a primary nor a foreign key nor part of a date (like e.g. a year, month, day of week) you should use the SQL_Numeric_Statistical_Validator.
-If the field is somehow related date then use the SQL_Validator to generate the SQL validation rules.
+If the field is somehow related to a date then use the SQL_Validator to generate the SQL validation rules.
 """

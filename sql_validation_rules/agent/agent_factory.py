@@ -28,7 +28,12 @@ def create_agent_runnable() -> RunnableSequence:
     """Construct an OpenAI functions agent"""
     return create_agent_runnable_helper(
         create_sql_validation_template(),
-        [sql_info_tables, calc_string_column_stats, calc_numeric_column_stats, sql_query, sql_query_checker],
+        [
+            sql_info_tables, 
+            sql_query, 
+            sql_query_checker,
+            # calc_string_column_stats, calc_numeric_column_stats
+        ],
     )
 
 

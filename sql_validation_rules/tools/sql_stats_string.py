@@ -9,7 +9,7 @@ from langchain.callbacks.manager import (
 )
 
 class CalcStatsForStringCols(BaseSQLDatabaseTool, BaseTool):
-    """Tool for getting statistics of a string column."""
+    """Tool for getting statistics of all string columns."""
 
     name = "sql_db_calc_str_stats"
     description = """Input is a single table name, output is a JSON string with the statistics related to string columns of the table.

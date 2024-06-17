@@ -87,13 +87,13 @@ def sql_query_columns(table_name: str) -> str:
 
 @tool("calc_string_column_stats", return_direct=True)
 def calc_string_column_stats(table_name: str) -> str:
-    """Gets column statistics of string fields of a table as a JSON object"""
+    """Gets column statistics of all string fields of a table as a JSON object"""
     return query_string_columns_stats(table_name)
 
 
 @tool("calc_numeric_column_stats", return_direct=True)
 def calc_numeric_column_stats(table_name: str) -> str:
-    """Gets column statistics of numeric fields of a table as a JSON object"""
+    """Gets column statistics of all numeric fields of a table as a JSON object"""
     return query_numeric_columns_stats(table_name)
 
 
