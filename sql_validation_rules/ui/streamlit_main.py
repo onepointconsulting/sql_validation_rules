@@ -50,6 +50,8 @@ def col_generator() -> Generator[str, None, None]:
 
 
 def display_sql_commands(sql_commands: List[SQLCommand]):
+    if len(sql_commands) == 0:
+        st.write("No SQL commands were generated.")
     for i, sql_command in enumerate(sql_commands):
         st.write(sql_command_to_str(sql_command))
         # Printing 10 results

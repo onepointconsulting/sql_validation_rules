@@ -9,8 +9,7 @@ from sql_validation_rules.tools.sql_tools import (
     sql_query_checker,
     sql_info_tables,
     numeric_stats_tool,
-    calc_string_column_stats,
-    calc_numeric_column_stats
+    sql_query_table_stats
 )
 from langchain_core.tools import BaseTool
 from langchain_core.prompts import ChatPromptTemplate
@@ -32,7 +31,7 @@ def create_agent_runnable() -> RunnableSequence:
             sql_info_tables, 
             sql_query, 
             sql_query_checker,
-            # calc_string_column_stats, calc_numeric_column_stats
+            sql_query_table_stats
         ],
     )
 
@@ -41,7 +40,7 @@ def create_numeric_agent_runnable() -> RunnableSequence:
     """Construct an OpenAI functions agent"""
     return create_agent_runnable_helper(
         create_sql_validation_numeric_template(),
-        [sql_info_tables, sql_query, sql_query_checker, numeric_stats_tool],
+        [sql_info_tables, sql_query, sql_query_checker, sql_query_table_stats],
     )
 
 

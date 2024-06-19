@@ -23,6 +23,7 @@ from sql_validation_rules.tools.query_sql_db_tool import ValidatorQuerySQLDataBa
 from langchain_core.runnables.base import RunnableSequence
 from sql_validation_rules.tools.sql_numeric_stats_tool import NumericColumnStatsSQLDatabaseTool
 from sql_validation_rules.tools.sql_stats_string import CalcStatsForStringCols
+from sql_validation_rules.tools.sql_table_stats_tool import GenerateTableStatsSQLDatabaseTool
 
 db = sql_db_factory()
 
@@ -35,6 +36,8 @@ query_sql: BaseTool = ValidatorQuerySQLDataBaseTool(db=db)
 query_sql_checker: BaseTool = QuerySQLCheckerTool(db=db, llm=cfg.llm)
 
 query_columns_tool: BaseTool = ListIndicesSQLDatabaseTool(db=db)
+
+query_table_stats: BaseTool = GenerateTableStatsSQLDatabaseTool(db=db)
 
 numeric_stats_tool: BaseTool = NumericStatsSQLDatabaseTool(
     db=db, args_schema=TableColumn
@@ -49,6 +52,7 @@ query_string_columns_stats: BaseTool = CalcStatsForStringCols(db=db)
 
 # Simplistic cache for the SQL list tables.
 list_tables_cache = ""
+sql_table_stats_cache = {}
 
 # Note that the input string is ignored here but cannot be removed.
 @tool("list_tables", return_direct=True)
@@ -113,6 +117,16 @@ def create_table_info_runnable_sequence() -> RunnableSequence:
     return RunnableSequence(
         first=table_column_info_tool, last=RunnableLambda(last_step)
     )
+
+@tool("sql_query_table_stats", return_direct=True)
+def sql_query_table_stats(table_name: str) -> str:
+    """Gets column statistics of all fields of a table as a JSON object"""
+    global sql_table_stats_cache
+    if table_name in sql_table_stats_cache:
+       return sql_table_stats_cache[table_name]
+    res = query_table_stats(table_name)
+    sql_table_stats_cache[table_name] = res
+    return res
 
 
 if __name__ == "__main__":
