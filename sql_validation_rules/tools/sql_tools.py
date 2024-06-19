@@ -15,6 +15,7 @@ from sql_validation_rules.config.config import cfg
 from sql_validation_rules.tools.list_columns_tool import ListIndicesSQLDatabaseTool
 from sql_validation_rules.tools.sql_numeric_stats_tool import NumericColumnStatsSQLDatabaseTool
 from sql_validation_rules.tools.sql_stats_string import CalcStatsForStringCols
+from sql_validation_rules.tools.sql_table_stats_tool import GenerateTableStatsSQLDatabaseTool
 
 db = sql_db_factory()
 
@@ -30,9 +31,12 @@ query_columns_tool: BaseTool = ListIndicesSQLDatabaseTool(db=db)
 
 query_numeric_columns_stats: BaseTool = NumericColumnStatsSQLDatabaseTool(db=db)
 query_string_columns_stats: BaseTool = CalcStatsForStringCols(db=db)
+query_table_stats: BaseTool = GenerateTableStatsSQLDatabaseTool(db=db)
 
 # Simplistic cache for the SQL list tables.
 sys.list_tables_cache = ""
+sql_info_tables_cache = {}
+sql_table_stats_cache = {}
 
 
 # Note that the input string is ignored here but cannot be removed.
@@ -48,7 +52,11 @@ def sql_list_tables(input: str) -> str:
 @tool("info_tables", return_direct=True)
 def sql_info_tables(table_list_str: str) -> str:
     """Returns information about a list of tables."""
-    return info_tables_tool(tool_input=table_list_str)
+    global sql_info_tables_cache
+    if table_list_str in sql_info_tables_cache:
+        return sql_info_tables_cache[table_list_str]
+    res = info_tables_tool(tool_input=table_list_str)
+    sql_info_tables_cache[table_list_str] = res
 
 
 @tool("sql_query", return_direct=True)
@@ -78,6 +86,16 @@ def calc_string_column_stats(table_name: str) -> str:
 def calc_numeric_column_stats(table_name: str) -> str:
     """Gets column statistics of numeric fields of a table as a JSON object"""
     return query_numeric_columns_stats(table_name)
+
+@tool("sql_query_table_stats", return_direct=True)
+def sql_query_table_stats(table_name: str) -> str:
+    """Gets column statistics of all fields of a table as a JSON object"""
+    global sql_table_stats_cache
+    if table_name in sql_table_stats_cache:
+       return sql_table_stats_cache[table_name]
+    res = query_table_stats(table_name)
+    sql_table_stats_cache[table_name] = res
+    return res
 
 if __name__ == "__main__":
 
@@ -121,6 +139,13 @@ if __name__ == "__main__":
         logger.info(type(res))
         logger.info(f"Numeric Stats result: {res}")        
 
+    def call_sql_table_stats(table_name: str):
+        logger.info(f"- Table: {table_name}")
+        res = sql_query_table_stats(table_name)
+        logger.info(type(res))
+        logger.info(f"Table Stats result: {res}")        
+
+
     #table_list_str = call_list_tables()
     # call_sql_info_tables(table_list_str)
     # query = "select count(*) from call_center"
@@ -130,4 +155,4 @@ if __name__ == "__main__":
     #table_list = [t.strip() for t in table_list_str.split(",")]
     #call_sql_query_columns(table_list[0])
     
-    call_calc_str_col_stats("warehouse")
+    call_sql_table_stats("warehouse")

@@ -4,9 +4,11 @@
     human_message = """Given an input query create syntactically correct Snowflake SQL queries which validate the data, then look at the results of the query and return the query.
 
 Remember: a SQL validation query checks data quality for a field and generate set of validation queries.
-You must get the statistics for each field based on field type (e.g. string, numeric) before generating the validation queries 
+You must get the statistics for each field before generating the validation queries 
 You can generate validation queries using field name , field data type and the derived field data statistics
-Valdation queries should return true or false
+
+Validation queries should return true or false. Return only those queries which passed validation by being executed and returning true.
+
 Validation queries can perform data quality check around null values, uniqueness
 For fields like email, zip, phone etc. validation query should check for data formats
 For fields with distinct values lesser than 10, validation query should check for fixed set of values and their counts
