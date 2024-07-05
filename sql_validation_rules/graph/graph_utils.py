@@ -5,7 +5,7 @@ from langgraph.graph.graph import CompiledGraph
 from langchain_core.messages import HumanMessage
 
 from sql_validation_rules.graph.graph_factory import app
-from sql_validation_rules.chain.sql_commands import SQLCommand
+from sql_validation_rules.chain.sql_commands import SQLCommand, SQLCommands
 from sql_validation_rules.config.log_factory import logger
 from sql_validation_rules.config.config import cfg
 from sql_validation_rules.config.toml_support import prompts
@@ -64,10 +64,10 @@ def extract_sql_command(messages: list) -> List[SQLCommand]:
         acc = []
         for message in messages[1:]:
             try:
-                sql_command = SQLCommand.parse_raw(message.content)
-                acc.append(sql_command)
-            except Exception as _:
-                logger.warn("Could not extract sql command from {message.content}.")
+                sql_commands = SQLCommands.parse_raw(message.content)
+                acc.extend(sql_commands.validation_commands)
+            except Exception as e:
+                logger.exception(f"Could not extract sql command from {message.content}: {e}")
         return acc
     return []
 
@@ -82,6 +82,8 @@ def convert_sql_command_to_str(sql_commands: List[SQLCommand]) -> str:
 def sql_command_to_str(sql_command: SQLCommand) -> str:
     return f"""
 ### {sql_command.validation_type}
+
+{sql_command.reasoning}
 
 ```sql
 {sql_command.validation_command}

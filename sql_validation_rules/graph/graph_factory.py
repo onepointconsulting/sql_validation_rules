@@ -1,4 +1,5 @@
 from typing import Tuple
+import json
 
 from langchain_core.agents import AgentFinish
 from langgraph.prebuilt.tool_executor import ToolExecutor
@@ -11,9 +12,7 @@ from sql_validation_rules.tools.sql_tools import (
     sql_info_tables,
     sql_query,
     sql_query_checker,
-    numeric_stats_tool,
-    calc_string_column_stats,
-    calc_numeric_column_stats
+    sql_query_table_stats
 )
 from sql_validation_rules.agent.agent_factory import (
     agent_runnable,
@@ -43,9 +42,7 @@ def create_tool_executor():
             sql_info_tables,
             sql_query,
             sql_query_checker,
-            numeric_stats_tool,
-            # calc_string_column_stats,
-            # calc_numeric_column_stats
+            sql_query_table_stats
         ]
     )
 
@@ -76,7 +73,7 @@ def run_extraction(data):
         try:
             outcome = extraction_chain.invoke(output)
             sql_commands: SQLCommands = outcome["function"]
-            res = {EXTRACTION_CONTENT: sql_commands.validation_commands}
+            res = {EXTRACTION_CONTENT: sql_commands}
             logger.info("run_extraction result: %s", res)
             return res
         except Exception as e:

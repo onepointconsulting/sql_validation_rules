@@ -18,7 +18,7 @@ from sql_validation_rules.graph.graph_factory import (
     agent_runnable,
     agent_runnable_numeric,
 )
-from sql_validation_rules.chain.sql_commands import SQLCommand
+from sql_validation_rules.chain.sql_commands import SQLCommands
 from sql_validation_rules.tools.sql_tools import create_table_info_runnable_sequence
 
 
@@ -39,10 +39,8 @@ def agent_node(state: dict, agent: CompiledGraph, name: str) -> dict:
         isinstance(result[AGENT_OUTCOME], AgentFinish)
         and "extraction_content" in result
     ):
-        content = ""
-        sql_commands: List[SQLCommand] = result["extraction_content"]
-        for sql_command in sql_commands:
-            content += sql_command.json()
+        sql_commands: SQLCommands = result["extraction_content"]
+        content = sql_commands.json()
     return {"messages": [HumanMessage(content=content, name=name)]}
 
 
