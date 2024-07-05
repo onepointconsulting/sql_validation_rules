@@ -16,6 +16,10 @@ from sql_validation_rules.tools.numeric_stats_tool import (
     NumericStatsSQLDatabaseTool,
     TableColumn,
 )
+from sql_validation_rules.tools.column_stats_tool import (
+    ColumnStatsSQLDatabaseTool,
+    TableColumn,
+)
 from sql_validation_rules.tools.table_column_info_tool import (
     TableColumnInfoDatabaseTool,
 )
@@ -44,8 +48,12 @@ table_column_info_tool: BaseTool = TableColumnInfoDatabaseTool(
     db=db, args_schema=TableColumn
 )
 
-query_numeric_columns_stats: BaseTool = NumericColumnStatsSQLDatabaseTool(db=db)
-query_string_columns_stats: BaseTool = CalcStatsForStringCols(db=db)
+column_stats_tool: BaseTool = ColumnStatsSQLDatabaseTool(
+    db=db, args_schema=TableColumn
+)
+
+#query_numeric_columns_stats: BaseTool = NumericColumnStatsSQLDatabaseTool(db=db)
+#query_string_columns_stats: BaseTool = CalcStatsForStringCols(db=db)
 
 # Simplistic cache for the SQL list tables.
 list_tables_cache = ""
@@ -90,16 +98,16 @@ def sql_query_columns(table_name: str) -> str:
     return query_columns_tool(table_name)
 
 
-@tool("calc_string_column_stats", return_direct=True)
-def calc_string_column_stats(table_name: str) -> str:
-    """Gets column statistics of all string fields of a table as a JSON object"""
-    return query_string_columns_stats(table_name)
+#@tool("calc_string_column_stats", return_direct=True)
+#def calc_string_column_stats(table_name: str) -> str:
+#    """Gets column statistics of all string fields of a table as a JSON object"""
+#    return query_string_columns_stats(table_name)
 
 
-@tool("calc_numeric_column_stats", return_direct=True)
-def calc_numeric_column_stats(table_name: str) -> str:
-    """Gets column statistics of all numeric fields of a table as a JSON object"""
-    return query_numeric_columns_stats(table_name)
+#@tool("calc_numeric_column_stats", return_direct=True)
+#def calc_numeric_column_stats(table_name: str) -> str:
+#    """Gets column statistics of all numeric fields of a table as a JSON object"""
+#    return query_numeric_columns_stats(table_name)
 
 
 def create_table_info_runnable_sequence() -> RunnableSequence:
@@ -158,6 +166,13 @@ if __name__ == "__main__":
         res = table_column_info_tool.run(table_col_dict.dict())
         assert res is not None
         logger.info(f"Table column res: {res}; type: {type(res)}")
+        
+    def call_sql_column_statistics(table_col_dict: TableColumn):
+        logger.info(f"- Table: {table_col_dict}")
+        res = column_stats_tool.run(table_col_dict.dict())
+        assert res is not None
+        assert isinstance(res, str)
+        logger.info(f"Stats: {res}")
 
     def call_table_column_info_as_runnable_sequence(table_col_dict: TableColumn):
         res = create_table_info_runnable_sequence().invoke(table_col_dict.dict())
@@ -183,3 +198,9 @@ if __name__ == "__main__":
     call_table_column_info_as_runnable_sequence(
         TableColumn(table="call_center", field="cc_closed_date_sk")
     )
+    
+    #table_col = TableColumn(table="call_center", field="cc_tax_percentage")
+    table_col = TableColumn(table="customer", field="c_first_name")
+    call_sql_column_statistics(table_col)
+
+    
