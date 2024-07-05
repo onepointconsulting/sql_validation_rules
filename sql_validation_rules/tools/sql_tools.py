@@ -7,6 +7,7 @@ from langchain_community.tools.sql_database.tool import (
     QuerySQLCheckerTool,
     QuerySQLDataBaseTool,
 )
+
 from langchain.tools import BaseTool, tool
 from langchain_community.tools.sql_database.tool import ListSQLDatabaseTool
 from langchain_core.tools import BaseTool
@@ -16,6 +17,10 @@ from sql_validation_rules.tools.list_columns_tool import ListIndicesSQLDatabaseT
 from sql_validation_rules.tools.sql_numeric_stats_tool import NumericColumnStatsSQLDatabaseTool
 from sql_validation_rules.tools.sql_stats_string import CalcStatsForStringCols
 from sql_validation_rules.tools.sql_table_stats_tool import GenerateTableStatsSQLDatabaseTool
+from sql_validation_rules.tools.column_stats_tool import (
+    ColumnStatsSQLDatabaseTool,
+    TableColumn,
+)
 
 db = sql_db_factory()
 
@@ -32,6 +37,10 @@ query_columns_tool: BaseTool = ListIndicesSQLDatabaseTool(db=db)
 query_numeric_columns_stats: BaseTool = NumericColumnStatsSQLDatabaseTool(db=db)
 query_string_columns_stats: BaseTool = CalcStatsForStringCols(db=db)
 query_table_stats: BaseTool = GenerateTableStatsSQLDatabaseTool(db=db)
+
+column_stats_tool: BaseTool = ColumnStatsSQLDatabaseTool(
+    db=db, args_schema=TableColumn
+)
 
 # Simplistic cache for the SQL list tables.
 sys.list_tables_cache = ""
@@ -144,7 +153,13 @@ if __name__ == "__main__":
         res = sql_query_table_stats(table_name)
         logger.info(type(res))
         logger.info(f"Table Stats result: {res}")        
-
+        
+    def call_sql_column_statistics(table_col_dict: TableColumn):
+        logger.info(f"- Table: {table_col_dict}")
+        res = column_stats_tool.run(table_col_dict.dict())
+        assert res is not None
+        assert isinstance(res, str)
+        logger.info(f"Stats: {res}")        
 
     #table_list_str = call_list_tables()
     # call_sql_info_tables(table_list_str)
@@ -155,4 +170,8 @@ if __name__ == "__main__":
     #table_list = [t.strip() for t in table_list_str.split(",")]
     #call_sql_query_columns(table_list[0])
     
-    call_sql_table_stats("warehouse")
+    #call_sql_table_stats("warehouse")
+    
+    #table_col = TableColumn(table="call_center", field="cc_tax_percentage")
+    table_col = TableColumn(table="customer", field="c_first_name")
+    call_sql_column_statistics(table_col)
