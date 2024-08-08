@@ -33,7 +33,6 @@ def sql_db_factory() -> SQLDatabase:
     return SQLDatabase(engine=engine, schema=db_config.schema, lazy_table_reflection=True)
 
 
-
 if __name__ == "__main__":
 
     from sql_validation_rules.config.log_factory import logger
