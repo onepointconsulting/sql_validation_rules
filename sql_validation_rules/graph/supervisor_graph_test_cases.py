@@ -17,7 +17,6 @@ from sql_validation_rules.observability.langfuse_factory import create_langfuse_
 
 
 if __name__ == "__main__":
-
     langfuse_handler = create_langfuse_handler()
 
     workflow, supervisor_app = create_supervisor_app()

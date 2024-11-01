@@ -29,7 +29,6 @@ def chain_factory_extract_sql_statements() -> LLMChain:
 extraction_chain = chain_factory_extract_sql_statements()
 
 if __name__ == "__main__":
-
     res = extraction_chain.invoke(
         """
 The tool result is The provided Snowflake SQL query seems to be correct based on the requirements listed. It is using the REGEXP_LIKE function to filter out rows where the web_zip column does not match the regular expression for a standard 5-digit ZIP code or a ZIP+4 code. There are no apparent mistakes related to the common issues listed, such as using NOT IN with NULL values, UNION vs. UNION ALL, BETWEEN for exclusive ranges, data type mismatches, quoting identifiers, incorrect function arguments, casting, or join column issues.

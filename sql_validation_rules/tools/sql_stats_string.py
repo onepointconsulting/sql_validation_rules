@@ -8,6 +8,7 @@ from langchain.callbacks.manager import (
     CallbackManagerForToolRun,
 )
 
+
 class CalcStatsForStringCols(BaseSQLDatabaseTool, BaseTool):
     """Tool for getting statistics of all string columns."""
 
@@ -25,17 +26,22 @@ class CalcStatsForStringCols(BaseSQLDatabaseTool, BaseTool):
         """Fetch statistics for all string column of a table."""
         try:
             columns: List[Any] = self.db._inspector.get_columns(table_name)
-            #for col in columns:
+            # for col in columns:
             #    print(str(col['type']).startswith('VARCHAR'))
             #    print(type(col['type']))
-            string_columns = [column['name'] for column in columns if str(column['type']).startswith('VARCHAR') or str(column['type']).startswith('TEXT')]
-            stats = {} 
+            string_columns = [
+                column["name"]
+                for column in columns
+                if str(column["type"]).startswith("VARCHAR")
+                or str(column["type"]).startswith("TEXT")
+            ]
+            stats = {}
             for col in string_columns:
-                query = f"select count({col}) as count_not_null, count(*) as count_with_nulls, count(distinct {col}) as count_distinct_values, min({col}) as min_value , max({col}) as max_value, mode({col}) as most_frequent_value, min(len({col})) as min_length_of_values, avg(len({col}))::string as average_length_of_values, max(len({col})) as max_length_of_values from {table_name}"  
+                query = f"select count({col}) as count_not_null, count(*) as count_with_nulls, count(distinct {col}) as count_distinct_values, min({col}) as min_value , max({col}) as max_value, mode({col}) as most_frequent_value, min(len({col})) as min_length_of_values, avg(len({col}))::string as average_length_of_values, max(len({col})) as max_length_of_values from {table_name}"
                 res = self.db._execute(query)
-                stats[col] = res[0]  
-                #print(stats[col])
-            return dumps(stats)            
+                stats[col] = res[0]
+                # print(stats[col])
+            return dumps(stats)
         except Exception as e:
             return f"Error: {e}"
 

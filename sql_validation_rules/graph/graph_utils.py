@@ -67,7 +67,9 @@ def extract_sql_command(messages: list) -> List[SQLCommand]:
                 sql_commands = SQLCommands.parse_raw(message.content)
                 acc.extend(sql_commands.validation_commands)
             except Exception as e:
-                logger.exception(f"Could not extract sql command from {message.content}: {e}")
+                logger.exception(
+                    f"Could not extract sql command from {message.content}: {e}"
+                )
         return acc
     return []
 

@@ -61,7 +61,6 @@ def display_sql_commands(sql_commands: List[SQLCommand]):
 
 
 with tab_column:
-
     # Create three columns
     table_col, field_col, results_col = st.columns([0.25, 0.25, 0.5])
 
@@ -84,7 +83,7 @@ with tab_column:
             table = st.session_state[SessionKeys.TABLE]
             column = st.session_state[SessionKeys.COLUMN]
             st.write(f"Table: {table}")
-            st.write(f"Column: {column}")
+            st.write(f"Column: **{column}**")
             st.write(st.session_state[SessionKeys.COLUMN_TYPE])
             if st.button("Generate rules"):
                 if cfg.langsmith_project_url:
@@ -100,7 +99,6 @@ with tab_column:
 
 
 with tab_table:
-
     # Create three columns
     table_col, results_col = st.columns([0.25, 0.75])
 

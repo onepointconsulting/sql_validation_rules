@@ -32,7 +32,6 @@ def execute_inputs(inputs_list: dict, output_file: Path, app: CompiledGraph):
 
 
 if __name__ == "__main__":
-
     from pathlib import Path
 
     inputs_list = [

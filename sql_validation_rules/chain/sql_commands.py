@@ -10,7 +10,8 @@ class SQLCommand(BaseModel):
         ..., description="The type of validation associated to this command"
     )
     reasoning: str = Field(
-        ..., description="The reasoning behind this query, ie. what it is supposed to validate and why it was created"
+        ...,
+        description="The reasoning behind this query, ie. what it is supposed to validate and why it was created",
     )
 
     def __repr__(self):

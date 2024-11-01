@@ -12,7 +12,7 @@ from sql_validation_rules.tools.sql_tools import (
     sql_info_tables,
     sql_query,
     sql_query_checker,
-    sql_query_table_stats
+    sql_query_table_stats,
 )
 from sql_validation_rules.agent.agent_factory import (
     agent_runnable,
@@ -42,7 +42,7 @@ def create_tool_executor():
             sql_info_tables,
             sql_query,
             sql_query_checker,
-            sql_query_table_stats
+            sql_query_table_stats,
         ]
     )
 
@@ -90,7 +90,6 @@ def run_extraction(data):
 
 
 def build_workflow(workflow: StateGraph, agent_runnable: RunnableSequence):
-
     def run_agent(data):
         agent_outcome = agent_runnable.invoke(data)
         return {AGENT_OUTCOME: agent_outcome}

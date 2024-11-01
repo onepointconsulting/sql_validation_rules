@@ -40,7 +40,6 @@ def sql_db_write_factory() -> Tuple[Engine, SQLDatabase]:
 
 
 if __name__ == "__main__":
-
     from sql_validation_rules.config.log_factory import logger
 
     logger.info("sql_db_factory")

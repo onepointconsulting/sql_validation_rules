@@ -1,5 +1,4 @@
-from typing import Optional, List, Any
-import json
+from typing import Optional
 
 from langchain.tools.sql_database.tool import BaseSQLDatabaseTool
 from langchain.tools.base import BaseTool

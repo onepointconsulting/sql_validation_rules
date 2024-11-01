@@ -9,13 +9,13 @@ from sql_validation_rules.tools.sql_tools import (
     sql_query_checker,
     sql_info_tables,
     numeric_stats_tool,
-    sql_query_table_stats
+    sql_query_table_stats,
 )
 from langchain_core.tools import BaseTool
 from langchain_core.prompts import ChatPromptTemplate
 from sql_validation_rules.agent.prompt_factory import (
     create_sql_validation_template,
-    create_sql_validation_numeric_template
+    create_sql_validation_numeric_template,
 )
 from sql_validation_rules.agent.agent_state import (
     FIELD_VALIDATION_SQL_HISTORY,
@@ -27,12 +27,7 @@ def create_agent_runnable() -> RunnableSequence:
     """Construct an OpenAI functions agent"""
     return create_agent_runnable_helper(
         create_sql_validation_template(),
-        [
-            sql_info_tables, 
-            sql_query, 
-            sql_query_checker,
-            sql_query_table_stats
-        ],
+        [sql_info_tables, sql_query, sql_query_checker, sql_query_table_stats],
     )
 
 
@@ -60,7 +55,6 @@ agent_runnable = create_agent_runnable()
 agent_runnable_numeric = create_numeric_agent_runnable()
 
 if __name__ == "__main__":
-
     # Run with python .\sql_validation_rules\agent\agent_factory.py
 
     def test_default_agent_runnable():
