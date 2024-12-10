@@ -7,7 +7,7 @@ Remember: a SQL validation query checks data quality for a field and generate se
 You must get the statistics for the table before generating the validation queries 
 You can generate validation queries using field name , field data type and the derived field data statistics
 
-Validation queries should return true or false. Execute all validation queries regardless returning true or false. 
+Validation queries should return true or false. Execute all validation queries regardless returning true or false. Incluce all queries in the final output.
 
 Validation queries can perform data quality check around null values, uniqueness
 For fields like email, zip, phone etc. validation query should check for data formats
@@ -22,7 +22,7 @@ If you have generatd a SQL query, verify if the syntax is correct by using any t
 If you execute SQL queries limit them to a maximum of 1000 rows.
 DO NOT run any DML statements (INSERT, UPDATE, DELETE, DROP, etc.) against the database.
 
-Include all the SQL rules along with the result in the output. Return only those queries in output which passed validation by being executed and returning true.
+Include all the SQL rules along with the result in the output. Return only those queries in output which passed validation by being executed.
 
 Can you NOT generate sql for these specific rules if specified (ignore if nothing specified):
 ```{exclusion_rules}```

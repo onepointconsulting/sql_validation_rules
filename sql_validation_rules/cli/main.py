@@ -32,47 +32,63 @@ def cli(ctx):
     default=1,
     help="How many distinct rules to generate",
 )
+
 def generate_rules(table: str, file: str, hide_steps: bool, count: int):
     """Generates rules for all fields in a table"""
     output_file = Path(file)
     if output_file.exists():
         # rename the file
         pass
-    with open(output_file, "w") as f:
-        col_json = sql_query_columns(table)
-        cols = json.loads(col_json)
-        for i, col in enumerate(cols):
-            sep = "\n\n" if i > 0 else ""
-            col_name = col["name"]
-            f.write(f"{sep}# {table} - {col_name}\n")
-            exclusion_rule = ""
-            for c in range(count):
-                inputs = {
-                    "table": table,
-                    "field": col_name,
-                    "chat_history": [],
-                    FIELD_EXCLUSION_RULES: exclusion_rule,
-                }
-                try:
-                    last_content = ""
-                    for content in stream_outputs(inputs):
-                        if not hide_steps:
-                            f.write("\n -------------------- \n")
-                            f.write(f"{content}")
-                        if "extraction_content" in content:
-                            sql_commands: List[SQLCommand] = content[
-                                "extraction_content"
-                            ]
-                            last_content = "\n".join([repr(s) for s in sql_commands])
-                            exclusion_rule = ",".join(s.validation_type for s in sql_commands)
-                        f.flush()
+    json_string = '{"table_name": \"' + table + '\" , "columns":[ '
+    col_json = sql_query_columns(table)
+    cols = json.loads(col_json)
+    all_column_str =""
+    for i, col in enumerate(cols):
+        col_name = col["name"]
+        exclusion_rule = ""
+        for c in range(count):
+            inputs = {
+                "table": table,
+                "field": col_name,
+                "chat_history": [],
+                FIELD_EXCLUSION_RULES: exclusion_rule,
+            }
+            try:
+                #set proper string for columns
+                if len(all_column_str) == 0:
+                    all_column_str = '{"column_name": \"' + col_name + '\", "validation_queries": ['
+                else:
+                    all_column_str = all_column_str + '},{ "column_name": \"' + col_name + '\", "validation_queries": ['
+                    
+                #fetch validation queries from extract
+                for content in stream_outputs(inputs):
+                    if "extraction_content" in content:
+                        sql_commands: List[SQLCommand] = content[
+                            "extraction_content"
+                        ]
+                        queries = ""
+                        for s in sql_commands:
+                            content = '{ "validation_type": \"' + s.validation_type + '\", "validation_command": \"' + s.validation_command.replace('\n',' ').replace('\r','').replace('\"','') + '\" }'
+                            if len(queries) > 0:
+                                queries = queries + "," + content
+                            else:
+                                queries = content
+                                #last_content = "[" + content
+                            print("queries in:" + queries)
+                        #last_content = last_content + "]"
+                        print("queries out:" + queries)
+                all_column_str = all_column_str + queries +' ]'
+                print(all_column_str)
+            except Exception as e:
+                msg = f"Failed to process {inputs}. Reason: {e}"
+                logger.exception(msg)
+                json_string = "Error : " + msg
+                
+    all_column_str = all_column_str +'}'
+    json_string = json_string + all_column_str + ' ]}'
 
-                    f.write(f"\n\n{last_content}\n\n")
-                    f.flush()
-                except Exception as e:
-                    msg = f"Failed to process {inputs}. Reason: {e}"
-                    logger.exception(msg)
-                    f.write(msg)
+    with open(output_file, "w") as f:
+        f.write(json_string)
 
 
 @cli.command()

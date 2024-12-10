@@ -154,12 +154,12 @@ if __name__ == "__main__":
         logger.info(type(res))
         logger.info(f"Table Stats result: {res}")        
         
-    def call_sql_column_statistics(table_col_dict: TableColumn):
-        logger.info(f"- Table: {table_col_dict}")
-        res = column_stats_tool.run(table_col_dict.dict())
-        assert res is not None
-        assert isinstance(res, str)
-        logger.info(f"Stats: {res}")        
+    #def call_sql_column_statistics(table_col_dict: TableColumn):
+    #    logger.info(f"- Table: {table_col_dict}")
+    #    res = column_stats_tool.run(table_col_dict.dict())
+    #    assert res is not None
+    #    assert isinstance(res, str)
+    #    logger.info(f"Stats: {res}")        
 
     #table_list_str = call_list_tables()
     # call_sql_info_tables(table_list_str)
@@ -173,5 +173,5 @@ if __name__ == "__main__":
     #call_sql_table_stats("warehouse")
     
     #table_col = TableColumn(table="call_center", field="cc_tax_percentage")
-    table_col = TableColumn(table="customer", field="c_first_name")
-    call_sql_column_statistics(table_col)
+    #table_col = TableColumn(table="customer", field="c_first_name")
+    #call_sql_column_statistics(table_col)
