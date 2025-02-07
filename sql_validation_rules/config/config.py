@@ -9,14 +9,40 @@ from sql_validation_rules.config.log_factory import logger
 load_dotenv()
 
 
-class SnowflakeConfig:
-    snowflake_account = os.getenv("SNOWFLAKE_ACCOUNT")
-    snowflake_user = os.getenv("SNOWFLAKE_USER")
-    snowflake_password = os.getenv("SNOWFLAKE_PASSWORD")
-    snowflake_database = os.getenv("SNOWFLAKE_DATABASE")
-    snowflake_schema = os.getenv("SNOWFLAKE_SCHEMA")
-    snowflake_warehouse = os.getenv("SNOWFLAKE_WAREHOUSE")
-    snowflake_host = os.getenv("SNOWFLAKE_HOST")
+class DBConfig:
+    db_type = os.getenv("DB_TYPE")
+    account = os.getenv("DB_ACCOUNT")
+    user = os.getenv("DB_USER")
+    password = os.getenv("DB_PASSWORD")
+    database = os.getenv("DB_DATABASE")
+    schema = os.getenv("DB_SCHEMA")
+    warehouse = os.getenv("DB_WAREHOUSE")
+    host = os.getenv("DB_HOST")
+    port = os.getenv("DB_PORT")
+
+
+class WriteDBConfig:
+    db_url = os.getenv("WRITE_DB_URL")
+    db_schema = os.getenv("WRITE_DB_SCHEMA")
+
+
+class LangfuseConfig:
+    langfuse_tracing = os.getenv("LANGFUSE_TRACING") == "true"
+    langfuse_public_key = os.getenv("LANGFUSE_PUBLIC_KEY")
+    langfuse_secret_key = os.getenv("LANGFUSE_SECRET_KEY")
+    langfuse_host = os.getenv("LANGFUSE_HOST")
+
+
+class WriteDBConfig:
+    db_url = os.getenv("WRITE_DB_URL")
+    db_schema = os.getenv("WRITE_DB_SCHEMA")
+
+
+class LangfuseConfig:
+    langfuse_tracing = os.getenv("LANGFUSE_TRACING") == "true"
+    langfuse_public_key = os.getenv("LANGFUSE_PUBLIC_KEY")
+    langfuse_secret_key = os.getenv("LANGFUSE_SECRET_KEY")
+    langfuse_host = os.getenv("LANGFUSE_HOST")
 
 
 class WriteDBConfig:
@@ -55,7 +81,7 @@ class Config:
     )
     verbose_llm = bool(os.getenv("VERBOSE_LLM", "True"))
     recursion_limit = int(os.getenv("RECURSION_LIMIT", "20"))
-    snowflake_config = SnowflakeConfig()
+    db_config = DBConfig()
     langfuse_config = LangfuseConfig()
     write_db_config = WriteDBConfig()
 
@@ -65,6 +91,9 @@ class Config:
 cfg = Config()
 
 if __name__ == "__main__":
+    assert cfg.db_config.host is not None
+    logger.info(f"Using host: {cfg.db_config.host}")
+    logger.info(f"Using db_type: {cfg.db_config.db_type}")
     assert cfg.db_config.host is not None
     logger.info(f"Using host: {cfg.db_config.host}")
     logger.info(f"Using db_type: {cfg.db_config.db_type}")
