@@ -8,7 +8,8 @@ from sqlalchemy.engine.base import Engine
 
 from sql_validation_rules.config.config import cfg
 
-def sql_db_factory() -> SQLDatabase:
+
+def read_engine_factory() -> Engine:
     db_config = cfg.db_config
 
     if db_config.db_type == 'snowflake':
@@ -33,8 +34,12 @@ def sql_db_factory() -> SQLDatabase:
     else:
         raise ValueError("Unsupported database type!")
     
-    engine = create_engine(url)
-    return SQLDatabase(engine=engine, schema=db_config.schema, lazy_table_reflection=True)
+    return create_engine(url)
+
+
+def sql_db_factory() -> SQLDatabase:
+    engine = read_engine_factory()
+    return SQLDatabase(engine=engine, schema=cfg.db_config.schema, lazy_table_reflection=True)
 
 
 
