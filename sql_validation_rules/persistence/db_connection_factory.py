@@ -1,18 +1,17 @@
 from typing import Tuple
 
 from langchain.sql_database import SQLDatabase
-from snowflake.sqlalchemy import URL
+from snowflake.sqlalchemy import URL as SF_URL
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 
 from sql_validation_rules.config.config import cfg
 
-
 def read_engine_factory() -> Engine:
     snowflake_config = cfg.snowflake_config
     schema = snowflake_config.snowflake_schema
     return create_engine(
-        URL(
+        SF_URL(
             account=snowflake_config.snowflake_account,
             user=snowflake_config.snowflake_user,
             password=snowflake_config.snowflake_password,

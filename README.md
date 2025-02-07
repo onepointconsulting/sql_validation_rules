@@ -8,12 +8,12 @@ Please make sure that Conda is properly installed on your shell. Typically you c
 
 ```bash
 conda remove -n sql_validation_rules --all
-conda create -n sql_validation_rules python=3.12
+conda create -n sql_validation_rules python=3.12.3
 conda activate sql_validation_rules
 pip install poetry
 poetry install
 ```
-
+ 
 ## Configuration
 
 Please check the [.env_local](.env_local) file to see the needed configuration parameters. 
@@ -36,13 +36,13 @@ python ./sql_validation_rules/graph/graph_integration_test_cases.py
 View the supported commands:
 
 ```bash
-python .\sql_validation_rules\cli\main.py --help
+python ./sql_validation_rules/cli/main.py --help
 ```
 
 List all columns of table 'call_center':
 
 ```bash
-python .\sql_validation_rules\cli\main.py list-columns --table call_center
+python ./sql_validation_rules/cli/main.py list-columns --table call_center
 ```
 
 Generate validation rules for table inventory:

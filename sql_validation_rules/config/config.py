@@ -31,6 +31,18 @@ class LangfuseConfig:
     langfuse_host = os.getenv("LANGFUSE_HOST")
 
 
+class WriteDBConfig:
+    db_url = os.getenv("WRITE_DB_URL")
+    db_schema = os.getenv("WRITE_DB_SCHEMA")
+
+
+class LangfuseConfig:
+    langfuse_tracing = os.getenv("LANGFUSE_TRACING") == "true"
+    langfuse_public_key = os.getenv("LANGFUSE_PUBLIC_KEY")
+    langfuse_secret_key = os.getenv("LANGFUSE_SECRET_KEY")
+    langfuse_host = os.getenv("LANGFUSE_HOST")
+
+
 class Config:
     project_root = Path(os.getenv("PROJECT_ROOT", "/home/ubuntu"))
     assert project_root.exists(), f"{project_root} does not exist."
@@ -53,5 +65,6 @@ class Config:
 cfg = Config()
 
 if __name__ == "__main__":
-    assert cfg.snowflake_config.snowflake_account is not None
-    logger.info(f"Using account: {cfg.snowflake_config.snowflake_account}")
+    assert cfg.db_config.host is not None
+    logger.info(f"Using host: {cfg.db_config.host}")
+    logger.info(f"Using db_type: {cfg.db_config.db_type}")
